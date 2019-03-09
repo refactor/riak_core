@@ -528,8 +528,8 @@ ensure_vnodes_started(Ring) ->
                   try
                       riak_core_ring_handler:ensure_vnodes_started(Ring)
                   catch
-                      T:R ->
-                          lager:error("~p", [{T, R, erlang:get_stacktrace()}])
+                      Type:Reason:Stacktrace ->
+                          lager:error("~p", [{Type, Reason, Stacktrace}])
                   end
           end).
 -else.
@@ -538,8 +538,8 @@ ensure_vnodes_started(Ring) ->
                   try
                       riak_core_ring_handler:ensure_vnodes_started(Ring)
                   catch
-                      T:R:Stack ->
-                          lager:error("~p", [{T, R, Stack}])
+                      Type:Reason:Stacktrace ->
+                          lager:error("~p", [{Type, Reason, Stacktrace}])
                   end
           end).
 -endif.
