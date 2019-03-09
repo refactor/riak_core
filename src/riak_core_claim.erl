@@ -407,7 +407,7 @@ increase_keeps([{Node, Own, Delta} | Rest], N, Max, Acc) when Delta < 0 ->
                    true -> 1;
                    false -> 0
                end,
-    increase_keeps(Rest, N+Additive, Max, [{Node, Own, Delta+Additive} | Acc]);
+    increase_keeps(Rest, N+Additive, Max, [{Node, Own+Delta+Additive} | Acc]);
 increase_keeps([NodeDelta | Rest], N, Max, Acc) ->
     increase_keeps(Rest, N, Max, [NodeDelta | Acc]).
 
@@ -663,7 +663,7 @@ build_nodelist(RingSize, Nodes, Shortfall, NodeCounter, MinFetchesPerSeq, _Acc=[
     NodeCount = length(Nodes),
     LastSegLength = (RingSize rem NodeCount) + Shortfall,
     NewSeq = lists:sublist(Nodes, 1, LastSegLength),
-    build_nodelist(RingSize, Nodes, Shortfall, NodeCounter, MinFetchesPerSeq, [NewSeq]);
+    build_nodelist(RingSize, Nodes, Shortfall, NodeCounter, MinFetchesPerSeq, NewSeq);
 build_nodelist(RingSize, Nodes, Shortfall, NodeCounter, MinFetchesPerSeq, Acc) ->
     %% Build rest of list, subtracting minimum of MinFetchesPerSeq, Shortfall 
     %% or (NodeCount - NodeCounter) each time
@@ -835,7 +835,7 @@ find_violations(Ring, TargetN) ->
 %% @private
 %%
 %% @doc Counts up the number of partitions owned by each node.
--spec get_counts([node()], riak_core_ring:riak_core_ring()) ->
+-spec get_counts([node()], [{integer(),_}]) ->
                         [{node(), non_neg_integer()}].
 get_counts(Nodes, Ring) ->
     Empty = [{Node, 0} || Node <- Nodes],

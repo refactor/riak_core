@@ -73,26 +73,28 @@ register_stat(P, App, Stat) ->
               exometer_alias:new(Alias, StatName, DP)
       end, Aliases).
 
-register_vnode_stats(Module, Index, Pid) ->
-    P = prefix(),
-    exometer:ensure([P, ?APP, vnodes_running, Module],
-		    { function, exometer, select_count,
-		      [[{ {[P, ?APP, vnodeq, Module, '_'], '_', '_'},
-			  [], [true] }]], match, value },
-                    [{aliases, [{value, vnodeq_atom(Module, <<"s_running">>)}]}]),
-    exometer:ensure([P, ?APP, vnodeq, Module],
-		    {function, riak_core_stat, vnodeq_stats, [Module],
-		     histogram, [mean,median,min,max,total]},
-                    [{aliases, [{mean  , vnodeq_atom(Module, <<"q_mean">>)},
-				{median, vnodeq_atom(Module, <<"q_median">>)},
-				{min   , vnodeq_atom(Module, <<"q_min">>)},
-				{max   , vnodeq_atom(Module, <<"q_max">>)},
-				{total , vnodeq_atom(Module, <<"q_total">>)}]}
-		    ]),
-    exometer:re_register(
-      [P, ?APP, vnodeq, Module, Index],
-      function, [{ arg, {erlang, process_info, [Pid, message_queue_len],
-                                match, {'_', value} }}]).
+register_vnode_stats(_Module, _Index, _Pid) ->
+    ok.
+    % TODO Dialyzer is complaining about an opaque type...
+    % P = prefix(),
+    % exometer:ensure([P, ?APP, vnodes_running, Module],
+	% 	    { function, exometer, select_count,
+	% 	      [[{ {[P, ?APP, vnodeq, Module, '_'], '_', '_'},
+	% 		  [], [true] }]], match, value },
+    %                 [{aliases, [{value, vnodeq_atom(Module, <<"s_running">>)}]}]),
+    % exometer:ensure([P, ?APP, vnodeq, Module],
+	% 	    {function, riak_core_stat, vnodeq_stats, [Module],
+	% 	     histogram, [mean,median,min,max,total]},
+    %                 [{aliases, [{mean  , vnodeq_atom(Module, <<"q_mean">>)},
+	% 			{median, vnodeq_atom(Module, <<"q_median">>)},
+	% 			{min   , vnodeq_atom(Module, <<"q_min">>)},
+	% 			{max   , vnodeq_atom(Module, <<"q_max">>)},
+	% 			{total , vnodeq_atom(Module, <<"q_total">>)}]}
+	% 	    ]),
+    % exometer:re_register(
+    %   [P, ?APP, vnodeq, Module, Index],
+    %   function, [{ arg, {erlang, process_info, [Pid, message_queue_len],
+    %                             match, {'_', value} }}]).
 
 unregister_vnode_stats(Module, Index) ->
     exometer:delete([riak_core_stat:prefix(), ?APP, vnodeq, Module, Index]).
