@@ -1,10 +1,7 @@
 REBAR ?= ./rebar3
 
-.PHONY: compile-no-deps test docs xref dialyzer-run dialyzer-quick dialyzer \
+.PHONY: test docs xref dialyzer \
 		cleanplt
-
-compile-no-deps:
-	${REBAR} compile
 
 test: compile
 	${REBAR} eunit
@@ -13,7 +10,7 @@ docs:
 	${REBAR} doc
 
 xref: compile
-	${REBAR} xre
+	${REBAR} xref
 
 dialyzer: 
 	${REBAR} dialyzer
