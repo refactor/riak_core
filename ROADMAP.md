@@ -21,8 +21,8 @@ Roadmap
   * [ ] `supervisor_pre_r14b04` -> `supervisor`
 
   
-* [ ] Remove dependency strong consistency `riak_ensemble`
-  * [ ] Discuss if this is needed
+* [x] Remove dependency strong consistency `riak_ensemble`
+  * [x] Discuss if this is needed
     * Default is false
 
 
