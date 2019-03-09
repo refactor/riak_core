@@ -50,6 +50,8 @@ Roadmap
 * [ ] Use own metric system
   * [ ] Remove old metrics `folsom`, `basho_stats`, `riak_sysmon`, `exometer_core` and calls in code
   * [ ] Replace with own metrics, marked in code as `%% STATS`
+
+* [ ] Remove `riak_core_aae_vnode` and corresponding code additions (look up previous commits)
   
 * [ ] Investigate why `erl_first_files` is needed
 * [ ] Investigate why `goldrush` is needed
