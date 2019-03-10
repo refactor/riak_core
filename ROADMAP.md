@@ -52,7 +52,7 @@ Roadmap
 
 * [ ] Remove `riak_core_aae_vnode` and corresponding code additions (look up previous commits)
   
-* [ ] Investigate why `erl_first_files` is needed
+* [x] Investigate why `erl_first_files` is needed -> not needed, it seems
 * [ ] Investigate why `goldrush` is needed
   
 * [x] Remove `rebar_erl_vsn` plugin and pre-process call
