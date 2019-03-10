@@ -178,20 +178,21 @@ set_mode(Service, Mode=manual) ->
 
 %% @doc Toggle debug mode, which prints verbose AAE information to the console.
 -spec set_debug(boolean()) -> ok.
-set_debug(Enabled) ->
-    Modules = [riak_core_index_hashtree,
-               riak_core_entropy_manager,
-               riak_core_exchange_fsm],
-    case Enabled of
-        true ->
-            [logger:trace_console([{module, Mod}]) || Mod <- Modules];
-        false ->
-            [begin
-                 {ok, Trace} = logger:trace_console([{module, Mod}]),
-                 logger:stop_trace(Trace)
-             end || Mod <- Modules]
-    end,
-    ok.
+set_debug(_Enabled) -> ok.
+    % TODO Fix if needed; the module is likely to become obsolete.
+    % Modules = [riak_core_index_hashtree,
+    %            riak_core_entropy_manager,
+    %            riak_core_exchange_fsm],
+    % case Enabled of
+    %     true ->
+    %         [logger:trace_console([{module, Mod}]) || Mod <- Modules];
+    %     false ->
+    %         [begin
+    %              {ok, Trace} = logger:trace_console([{module, Mod}]),
+    %              logger:stop_trace(Trace)
+    %          end || Mod <- Modules]
+    % end,
+    % ok.
 
 enable(Service) ->
     gen_server:call(gen_name(Service), enable, infinity).
