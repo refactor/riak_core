@@ -65,7 +65,7 @@ validate_ring_state_directory_exists() ->
         {error, RingReason} ->
             logger:critical(
               "Ring state directory ~p does not exist, " "and could not be created: ~p",
-              [RingStateDir, logger:posix_error(RingReason)]),
+              [RingStateDir, RingReason]),
             throw({error, invalid_ring_state_dir})
     end.
 
