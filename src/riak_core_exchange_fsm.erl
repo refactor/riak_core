@@ -415,9 +415,9 @@ fold_disk_log(eof, _Fun, Acc, _DiskLog) ->
 fold_disk_log({Cont, Terms}, Fun, Acc, DiskLog) ->
     Acc2 = try
                lists:foldl(Fun, Acc, Terms)
-           catch X:Y ->
+           catch Type:Reason:Stacktrace ->
                    lager:error("~s:fold_disk_log: caught ~p ~p @ ~p\n",
-                               [?MODULE, X, Y, erlang:get_stacktrace()]),
+                               [?MODULE, Type, Reason, Stacktrace]),
                    Acc
            end,
     fold_disk_log(disk_log:chunk(DiskLog, Cont), Fun, Acc2, DiskLog).
@@ -427,9 +427,9 @@ fold_disk_log(eof, _Fun, Acc, _DiskLog) ->
 fold_disk_log({Cont, Terms}, Fun, Acc, DiskLog) ->
     Acc2 = try
                lists:foldl(Fun, Acc, Terms)
-           catch X:Y:Stack ->
+           catch Type:Reason:Stacktrace ->
                    lager:error("~s:fold_disk_log: caught ~p ~p @ ~p\n",
-                               [?MODULE, X, Y, Stack]),
+                               [?MODULE, Type, Reason, Stacktrace]),
                    Acc
            end,
     fold_disk_log(disk_log:chunk(DiskLog, Cont), Fun, Acc2, DiskLog).
