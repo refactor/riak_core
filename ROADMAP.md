@@ -40,7 +40,6 @@ Roadmap
 * [x] Update poolboy dependency
 
 * [ ] Remove node ring versioning (A)
-  * [ ] Discuss if rolling upgrades of antidote applications are needed
   
 * [ ] Remove riak CLI (A)
   * [ ] Removing CLI removes dependency `clique`
@@ -56,7 +55,7 @@ Roadmap
 * [ ] Investigate why `erl_first_files` is needed
 * [ ] Investigate why `goldrush` is needed
   
-* [ ] Remove `rebar_erl_vsn` plugin and pre-process call when code is up-to-date
+* [x] Remove `rebar_erl_vsn` plugin and pre-process call
 
 * [ ] Discuss handoff
   * Modules: `?`
