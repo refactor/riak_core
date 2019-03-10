@@ -6,7 +6,7 @@
      {included_applications,[chash]},
      {applications,
          [kernel,stdlib,gen_fsm_compat,sasl,crypto,riak_sysmon,os_mon,
-          basho_stats,eleveldb,pbkdf2,poolboy,exometer_core,clique,folsom]},
+          basho_stats,eleveldb,pbkdf2,poolboy,exometer_core,folsom]},
      {mod,{riak_core_app,[]}},
      {env,
          [{cluster_name,"default"},
@@ -29,7 +29,7 @@
                 [{options,
                      [{histogram_module,exometer_slot_slide},
                       {keep_high,500}]}]}]}]},
-     {pkg_name,"riak_core_ng"},
+     {pkg_name,"riak_core_antidote"},
      {maintainers,["basho","Heinz N. Gies"]},
      {licenses,["Apache"]},
      {links,[{"Github","https://github.com/Kyorai/riak_core"}]}]}.
