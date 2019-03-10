@@ -4,7 +4,8 @@ The 'antidote' version of riak core is a minimal and up-to-date version of riak 
 
 # Riak Core
 
-[![Build Status](https://secure.travis-ci.org/basho/riak_core.png)](http://travis-ci.org/basho/riak_core)
+[![Build Status](https://travis-ci.com/albsch/riak_core.svg?branch=master)](https://travis-ci.com/albsch/riak_core.svg?branch=master)
+
 
 Riak Core is the distributed systems framework that forms the basis of
 how [Riak](http://github.com/basho/riak) distributes data and scales.
