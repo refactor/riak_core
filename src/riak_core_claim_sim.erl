@@ -113,9 +113,9 @@ run(Opts) ->
     setup_environment(AppVars),
                
     Wants = proplists:get_value(wants, Opts, 
-                                app_helper:get_env(riak_core, wants_claim_fun)),
+                                application:get_env(riak_core, wants_claim_fun, undefined)),
     Choose = proplists:get_value(choose, 
-                                 Opts, app_helper:get_env(riak_core, choose_claim_fun)),
+                                 Opts, application:get_env(riak_core, choose_claim_fun, undefined)),
     
     Prepare = proplists:get_value(prepare, Opts, finish),
     Cmds = proplists:get_value(cmds, Opts, []),
@@ -123,7 +123,7 @@ run(Opts) ->
     Analysis = proplists:get_value(analysis, Opts, []),
     ReturnRing = proplists:get_value(return_ring, Opts, false),
     
-    TN0 = proplists:get_value(target_n_val, Opts, app_helper:get_env(riak_core, target_n_val)),
+    TN0 = proplists:get_value(target_n_val, Opts, application:get_env(riak_core, target_n_val, undefined)),
 
     {Ring, TN} = 
         case {Claimant, RingFile, RingArg} of

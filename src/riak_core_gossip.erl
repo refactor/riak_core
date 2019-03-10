@@ -386,7 +386,7 @@ remove_from_cluster(Ring, ExitingNode, Seed) ->
     ExitRing.
 
 attempt_simple_transfer(Seed, Ring, Owners, ExitingNode) ->
-    TargetN = app_helper:get_env(riak_core, target_n_val),
+    TargetN = application:get_env(riak_core, target_n_val, undefined),
     attempt_simple_transfer(Seed, Ring, Owners,
                             TargetN,
                             ExitingNode, 0,

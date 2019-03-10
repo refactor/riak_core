@@ -117,7 +117,7 @@ validate_reserved_name(_) ->
 
 -spec defaults() -> [{atom(), any()}].
 defaults() ->
-    app_helper:get_env(riak_core, default_bucket_props).
+    application:get_env(riak_core, default_bucket_props, undefined).
 
 -spec append_defaults([{atom(), any()}]) -> ok.
 append_defaults(Items) when is_list(Items) ->

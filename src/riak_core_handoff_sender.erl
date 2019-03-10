@@ -340,7 +340,7 @@ start_fold(TargetNode, Module, {Type, Opts}, ParentPid, SslOpts) ->
      end.
 -endif.
 start_visit_item_timer() ->
-    Ival = case app_helper:get_env(riak_core, handoff_receive_timeout) of
+    Ival = case application:get_env(riak_core, handoff_receive_timeout, undefined) of
                TO when is_integer(TO) ->
                    erlang:max(1000, TO div 3);
                _ ->

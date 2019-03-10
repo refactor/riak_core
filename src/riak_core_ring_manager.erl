@@ -240,7 +240,7 @@ do_write_ringfile(Ring) ->
             {{Year, Month, Day},{Hour, Minute, Second}} = calendar:universal_time(),
             TS = io_lib:format(".~B~2.10.0B~2.10.0B~2.10.0B~2.10.0B~2.10.0B",
                                [Year, Month, Day, Hour, Minute, Second]),
-            Cluster = app_helper:get_env(riak_core, cluster_name),
+            Cluster = application:get_env(riak_core, cluster_name, undefined),
             FN = Dir ++ "/riak_core_ring." ++ Cluster ++ TS,
             do_write_ringfile(Ring, FN)
     end.
@@ -261,7 +261,7 @@ find_latest_ringfile() ->
     Dir = ring_dir(),
     case file:list_dir(Dir) of
         {ok, Filenames} ->
-            Cluster = app_helper:get_env(riak_core, cluster_name),
+            Cluster = application:get_env(riak_core, cluster_name, undefined),
             Timestamps = [list_to_integer(TS) || {"riak_core_ring", C1, TS} <-
                                                      [list_to_tuple(string:tokens(FN, ".")) || FN <- Filenames],
                                                  C1 =:= Cluster],
@@ -289,7 +289,7 @@ prune_ringfiles() ->
     case ring_dir() of
         "<nostore>" -> ok;
         Dir ->
-            Cluster = app_helper:get_env(riak_core, cluster_name),
+            Cluster = application:get_env(riak_core, cluster_name, undefined),
             case file:list_dir(Dir) of
                 {error,enoent} -> ok;
                 {error, Reason} ->
@@ -473,7 +473,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% ===================================================================
 
 ring_dir() ->
-    case app_helper:get_env(riak_core, ring_state_dir) of
+    case application:get_env(riak_core, ring_state_dir, undefined) of
         undefined ->
             filename:join(app_helper:get_env(riak_core, platform_data_dir, "data"), "ring");
         D ->
@@ -694,7 +694,7 @@ refresh_my_ring_test() ->
                          {ring_state_dir, "/tmp"},
                          {cluster_name, "test"}],
         [begin
-             put({?MODULE,AppKey}, app_helper:get_env(riak_core, AppKey)),
+             put({?MODULE,AppKey}, application:get_env(riak_core, AppKey, undefined)),
              ok = application:set_env(riak_core, AppKey, Val)
          end || {AppKey, Val} <- Core_Settings],
         stop_core_processes(),

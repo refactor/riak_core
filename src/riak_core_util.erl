@@ -777,7 +777,7 @@ job_class_enabled(Application, Operation) ->
 %% * Parameter types ARE NOT validated by the same rules as the public API!
 %% You are STRONGLY advised to use enable_job_class/2.
 enable_job_class(Class) ->
-    case app_helper:get_env(riak_core, job_accept_class) of
+    case application:get_env(riak_core, job_accept_class, undefined) of
         [_|_] = EnabledClasses ->
             case lists:member(Class, EnabledClasses) of
                 true ->
@@ -797,7 +797,7 @@ enable_job_class(Class) ->
 %% * Parameter types ARE NOT validated by the same rules as the public API!
 %% You are STRONGLY advised to use disable_job_class/2.
 disable_job_class(Class) ->
-    case app_helper:get_env(riak_core, job_accept_class) of
+    case application:get_env(riak_core, job_accept_class, undefined) of
         [_|_] = EnabledClasses ->
             case lists:member(Class, EnabledClasses) of
                 false ->
@@ -817,7 +817,7 @@ disable_job_class(Class) ->
 %% * Parameter types ARE NOT validated by the same rules as the public API!
 %% You are STRONGLY advised to use job_class_enabled/2.
 job_class_enabled(Class) ->
-    case app_helper:get_env(riak_core, job_accept_class) of
+    case application:get_env(riak_core, job_accept_class, undefined) of
         undefined ->
             true;
         [] ->
@@ -946,7 +946,7 @@ determine_max_n(Ring) ->
 determine_all_n(Ring) ->
     Buckets = riak_core_ring:get_buckets(Ring),
     BucketProps = [riak_core_bucket:get_bucket(Bucket, Ring) || Bucket <- Buckets],
-    Default = app_helper:get_env(riak_core, default_bucket_props),
+    Default = application:get_env(riak_core, default_bucket_props, undefined),
     DefaultN = proplists:get_value(n_val, Default),
     AllN = lists:foldl(fun(Props, AllN) ->
                                N = proplists:get_value(n_val, Props),

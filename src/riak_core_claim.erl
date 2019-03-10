@@ -79,8 +79,8 @@
 -define(DEF_TARGET_N, 4).
 
 claim(Ring) ->
-    Want = app_helper:get_env(riak_core, wants_claim_fun),
-    Choose = app_helper:get_env(riak_core, choose_claim_fun),
+    Want = application:get_env(riak_core, wants_claim_fun, undefined),
+    Choose = application:get_env(riak_core, choose_claim_fun, undefined),
     claim(Ring, Want, Choose).
 
 claim(Ring, Want, Choose) ->
@@ -90,8 +90,8 @@ claim(Ring, Want, Choose) ->
                 end, Ring, Members).
 
 claim_until_balanced(Ring, Node) ->
-    Want = app_helper:get_env(riak_core, wants_claim_fun),
-    Choose = app_helper:get_env(riak_core, choose_claim_fun),
+    Want = application:get_env(riak_core, wants_claim_fun, undefined),
+    Choose = application:get_env(riak_core, choose_claim_fun, undefined),
     claim_until_balanced(Ring, Node, Want, Choose).
 
 claim_until_balanced(Ring, Node, {WMod, WFun}=Want, Choose) ->

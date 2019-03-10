@@ -65,7 +65,7 @@
 %% as the data root.
 -spec start_link() -> {ok, pid()} | ignore | {error, term()}.
 start_link() ->
-    PRoot = app_helper:get_env(riak_core, platform_data_dir),
+    PRoot = application:get_env(riak_core, platform_data_dir, undefined),
     DataRoot = filename:join(PRoot, "cluster_meta/trees"),
     start_link(DataRoot).
 
