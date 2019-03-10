@@ -48,7 +48,7 @@ init([Idx]) ->
 % ...
 %% This is used for rehashing the tree
 handle_command(?FOLD_REQ{foldfun=Fun, acc0=Acc0}, _Sender, State) ->
-    lager:debug("Fold on ~p", [State#state.partition]),
+    logger:debug("Fold on ~p", [State#state.partition]),
     Acc = orddict:fold(State#state.dict, fun(K, V, A) ->
     	 Fun({<<"bucket">>, K}, V, A)
       end, Acc0),
@@ -59,14 +59,14 @@ handle_command(?FOLD_REQ{foldfun=Fun, acc0=Acc0}, _Sender, State) ->
 %% retry_create_hashtree is required by `riak_core_aae_vnode:maybe_create_hashtrees`
 %% if the creation failed
 handle_info(retry_create_hashtree, State=#state{hashtrees=undefined, index=Idx}) ->
-    lager:debug("~p/~p retrying to create a hash tree.", [?SERVICE, Idx]),
+    logger:debug("~p/~p retrying to create a hash tree.", [?SERVICE, Idx]),
     HT = riak_core_aae_vnode:maybe_create_hashtrees(?SERVICE, Idx, undefined),
     {ok, State#state{hashtrees = HT}};
 handle_info(retry_create_hashtree, State) ->
     {ok, State};
 %% When the hashtree goes down we want to create a new one.
 handle_info({'DOWN', _, _, Pid, _}, State=#state{hashtrees=Pid, index=Idx}) ->
-    lager:debug("~p/~p hashtree ~p went down.", [?SERVICE, Idx, Pid]),
+    logger:debug("~p/~p hashtree ~p went down.", [?SERVICE, Idx, Pid]),
     erlang:send_after(1000, self(), retry_create_hashtree),
     {ok, State#state{hashtrees = undefined}};
 handle_info({'DOWN', _, _, _, _}, State) ->

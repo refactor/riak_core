@@ -290,7 +290,7 @@ graft({PKey, Context}) ->
         undefined ->
             %% There would have to be a serious error in implementation to hit this case.
             %% Catch if here b/c it would be much harder to detect
-            lager:error("object not found during graft for key: ~p", [PKey]),
+            logger:error("object not found during graft for key: ~p", [PKey]),
             {error, {not_found, PKey}};
          Obj ->
             graft(Context, Obj)
@@ -312,7 +312,7 @@ graft(Context, Obj) ->
 %% @doc Trigger an exchange
 -spec exchange(node()) -> {ok, pid()} | {error, term()}.
 exchange(Peer) ->
-    Timeout = app_helper:get_env(riak_core, metadata_exchange_timeout, 60000),
+    Timeout = application:get_env(riak_core, metadata_exchange_timeout, 60000),
     case riak_core_metadata_exchange_fsm:start(Peer, Timeout) of
         {ok, Pid} ->
             {ok, Pid};

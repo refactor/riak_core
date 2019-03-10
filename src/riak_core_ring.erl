@@ -243,13 +243,13 @@ set_tainted(Ring) ->
     update_meta(riak_core_ring_tainted, true, Ring).
 
 check_tainted(Ring=?CHSTATE{}, Msg) ->
-    Exit = app_helper:get_env(riak_core, exit_when_tainted, false),
+    Exit = application:get_env(riak_core, exit_when_tainted, false),
     case {get_meta(riak_core_ring_tainted, Ring), Exit} of
         {{ok, true}, true} ->
             riak_core:stop(Msg),
             ok;
         {{ok, true}, false} ->
-            lager:error(Msg),
+            logger:error(Msg),
             ok;
         _ ->
             ok
@@ -337,7 +337,7 @@ fresh() ->
 %%      Called by fresh/0, and otherwise only intended for testing purposes.
 -spec fresh(NodeName :: term()) -> chstate().
 fresh(NodeName) ->
-    fresh(app_helper:get_env(riak_core, ring_creation_size), NodeName).
+    fresh(application:get_env(riak_core, ring_creation_size, undefined), NodeName).
 
 %% @doc Equivalent to fresh/1 but allows specification of the ring size.
 %%      Called by fresh/1, and otherwise only intended for testing purposes.
@@ -1301,7 +1301,7 @@ pretty_print(Ring, Opts) ->
     OptLegend = lists:member(legend, Opts),
     Out = proplists:get_value(out, Opts, standard_io),
     TargetN = proplists:get_value(target_n, Opts,
-                                  app_helper:get_env(riak_core, target_n_val)),
+                                  application:get_env(riak_core, target_n_val, undefined)),
 
     Owners = riak_core_ring:all_members(Ring),
     Indices = riak_core_ring:all_owners(Ring),
@@ -1454,19 +1454,19 @@ pick_val({N1,M1}, {N2,M2}) ->
 %% @private
 %% Log ring metadata input and result for debug purposes
 log_meta_merge(M1, M2, Meta) ->
-    lager:debug("Meta A: ~p", [M1]),
-    lager:debug("Meta B: ~p", [M2]),
-    lager:debug("Meta result: ~p", [Meta]).
+    logger:debug("Meta A: ~p", [M1]),
+    logger:debug("Meta B: ~p", [M2]),
+    logger:debug("Meta result: ~p", [Meta]).
 
 %% @private
 %% Log result of a ring reconcile. In the case of ring churn,
 %% subsequent log messages will allow us to track ring versions.
 %% Handle legacy rings as well.
 log_ring_result(#chstate_v2{vclock=V,members=Members,next=Next}) ->
-    lager:debug("Updated ring vclock: ~p, Members: ~p, Next: ~p", 
+    logger:debug("Updated ring vclock: ~p, Members: ~p, Next: ~p", 
         [V, Members, Next]);
 log_ring_result(Ring) ->
-    lager:debug("Ring: ~p", [Ring]).
+    logger:debug("Ring: ~p", [Ring]).
 
 %% @private
 internal_reconcile(State, OtherState) ->

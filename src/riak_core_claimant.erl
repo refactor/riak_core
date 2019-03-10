@@ -568,7 +568,7 @@ valid_resize_request(NewRingSize, [], Ring) ->
     %%            should allow applications to register with some flag indicating support
     %%            for dynamic ring, if all registered applications support it
     %%            the cluster is capable. core knowing about search/kv is :(
-    ControlRunning = app_helper:get_env(riak_control, enabled, false),
+    ControlRunning = application:get_env(riak_control, enabled, false),
     NodeCount = length(riak_core_ring:all_members(Ring)),
     Changes = length(riak_core_ring:pending_changes(Ring)) > 0,
     case {ControlRunning, Capable, IsResizing, NodeCount, Changes} of
@@ -622,7 +622,7 @@ same_plan(RingA, RingB) ->
     (riak_core_ring:pending_changes(RingA) == riak_core_ring:pending_changes(RingB)).
 
 schedule_tick() ->
-    Tick = app_helper:get_env(riak_core,
+    Tick = application:get_env(riak_core,
                               claimant_tick,
                               10000),
     erlang:send_after(Tick, ?MODULE, tick).
@@ -660,7 +660,7 @@ do_maybe_force_ring_update(Ring) ->
         {ok, NextRing} ->
             case same_plan(Ring, NextRing) of
                 false ->
-                    lager:warning("Forcing update of stalled ring"),
+                    logger:warning("Forcing update of stalled ring"),
                     riak_core_ring_manager:force_update();
                 true ->
                     ok
@@ -829,7 +829,7 @@ enable_ensembles(Ring) ->
             %% that ensembles are properly bootstrapped.
             riak_ensemble_manager:enable(),
             riak_core_ring_manager:force_update(),
-            lager:info("Activated consensus subsystem for cluster");
+            logger:info("Activated consensus subsystem for cluster");
         _ ->
             ok
     end.
@@ -1541,15 +1541,15 @@ no_log(_, _) ->
     ok.
 
 log(debug, {Msg, Args}) ->
-    lager:debug(Msg, Args);
+    logger:debug(Msg, Args);
 log(ownership, {Idx, NewOwner, CState}) ->
     Owner = riak_core_ring:index_owner(CState, Idx),
-    lager:debug("(new-owner) ~b :: ~p -> ~p~n", [Idx, Owner, NewOwner]);
+    logger:debug("(new-owner) ~b :: ~p -> ~p~n", [Idx, Owner, NewOwner]);
 log(reassign, {Idx, NewOwner, CState}) ->
     Owner = riak_core_ring:index_owner(CState, Idx),
-    lager:debug("(reassign) ~b :: ~p -> ~p~n", [Idx, Owner, NewOwner]);
+    logger:debug("(reassign) ~b :: ~p -> ~p~n", [Idx, Owner, NewOwner]);
 log(next, {Idx, Owner, NewOwner}) ->
-    lager:debug("(pending) ~b :: ~p -> ~p~n", [Idx, Owner, NewOwner]);
+    logger:debug("(pending) ~b :: ~p -> ~p~n", [Idx, Owner, NewOwner]);
 log(_, _) ->
     ok.
 

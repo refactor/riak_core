@@ -50,7 +50,7 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    DistMonEnabled = app_helper:get_env(riak_core, enable_dist_mon,
+    DistMonEnabled = application:get_env(riak_core, enable_dist_mon,
                                         true),
     {ok, Root} = application:get_env(riak_core, platform_data_dir),
 
@@ -87,5 +87,5 @@ init([]) ->
 
 ensembles_enabled() ->
     Exists = (code:which(riak_ensemble_sup) =/= non_existing),
-    Enabled = app_helper:get_env(riak_core, enable_consensus, false),
+    Enabled = application:get_env(riak_core, enable_consensus, false),
     Exists and Enabled.

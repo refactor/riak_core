@@ -126,7 +126,7 @@ random_recursive_gossip(Ring) ->
 init(_State) ->
     schedule_next_reset(),
     {ok, Ring} = riak_core_ring_manager:get_raw_ring(),
-    {Tokens, _} = app_helper:get_env(riak_core, gossip_limit, ?DEFAULT_LIMIT),
+    {Tokens, _} = application:get_env(riak_core, gossip_limit, ?DEFAULT_LIMIT),
     State = update_known_versions(Ring,
                                   #state{gossip_versions=orddict:new(),
                                          gossip_tokens=Tokens}),
@@ -236,7 +236,7 @@ handle_cast({rejoin, RingIn}, State) ->
             case riak_core:join(node(), OtherNode, true, true) of
                 ok -> ok;
                 {error, Reason} ->
-                    lager:error("Could not rejoin cluster: ~p", [Reason]),
+                    logger:error("Could not rejoin cluster: ~p", [Reason]),
                     ok
             end,
             {noreply, State};
@@ -250,7 +250,7 @@ handle_cast(_, State) ->
 handle_info(reset_tokens, State) ->
     schedule_next_reset(),
     gen_server:cast(?MODULE, gossip_ring),
-    {Tokens, _} = app_helper:get_env(riak_core, gossip_limit, ?DEFAULT_LIMIT),
+    {Tokens, _} = application:get_env(riak_core, gossip_limit, ?DEFAULT_LIMIT),
     {noreply, State#state{gossip_tokens=Tokens}};
 
 handle_info(_Info, State) -> {noreply, State}.
@@ -269,7 +269,7 @@ code_change(_OldVsn, State, _Extra) ->
 %% ===================================================================
 
 schedule_next_reset() ->
-    {_, Reset} = app_helper:get_env(riak_core, gossip_limit, ?DEFAULT_LIMIT),
+    {_, Reset} = application:get_env(riak_core, gossip_limit, ?DEFAULT_LIMIT),
     erlang:send_after(Reset, ?MODULE, reset_tokens).
 
 reconcile(Ring0, [OtherRing0]) ->
@@ -348,13 +348,13 @@ do_log_membership_changes([], [{NewNode, NewStatus}|New]) ->
     do_log_membership_changes([], New).
 
 log_node_changed(Node, Old, New) ->
-    lager:info("'~s' changed from '~s' to '~s'~n", [Node, Old, New]).
+    logger:info("'~s' changed from '~s' to '~s'~n", [Node, Old, New]).
 
 log_node_added(Node, New) ->
-    lager:info("'~s' joined cluster with status '~s'~n", [Node, New]).
+    logger:info("'~s' joined cluster with status '~s'~n", [Node, New]).
 
 log_node_removed(Node, Old) ->
-    lager:info("'~s' removed from cluster (previously: '~s')~n", [Node, Old]).
+    logger:info("'~s' removed from cluster (previously: '~s')~n", [Node, Old]).
 
 remove_from_cluster(Ring, ExitingNode) ->
     remove_from_cluster(Ring, ExitingNode, riak_core_rand:rand_seed()).
@@ -386,7 +386,7 @@ remove_from_cluster(Ring, ExitingNode, Seed) ->
     ExitRing.
 
 attempt_simple_transfer(Seed, Ring, Owners, ExitingNode) ->
-    TargetN = app_helper:get_env(riak_core, target_n_val),
+    TargetN = application:get_env(riak_core, target_n_val, undefined),
     attempt_simple_transfer(Seed, Ring, Owners,
                             TargetN,
                             ExitingNode, 0,

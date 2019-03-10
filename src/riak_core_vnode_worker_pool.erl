@@ -95,7 +95,7 @@ init([WorkerMod, PoolSize, VNodeIndex, WorkerArgs, WorkerProps, Opts]) ->
             {worker_args, [VNodeIndex, WorkerArgs, WorkerProps, self()]},
             {worker_callback_mod, WorkerMod},
             {size, PoolSize}, {max_overflow, 0}]),
-    DfltStrategy = app_helper:get_env(riak_core, queue_worker_strategy, fifo),
+    DfltStrategy = application:get_env(riak_core, queue_worker_strategy, fifo),
     State = case proplists:get_value(strategy, Opts, DfltStrategy) of
                 fifo ->
                      #state{

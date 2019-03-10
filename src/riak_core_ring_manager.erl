@@ -240,7 +240,7 @@ do_write_ringfile(Ring) ->
             {{Year, Month, Day},{Hour, Minute, Second}} = calendar:universal_time(),
             TS = io_lib:format(".~B~2.10.0B~2.10.0B~2.10.0B~2.10.0B~2.10.0B",
                                [Year, Month, Day, Hour, Minute, Second]),
-            Cluster = app_helper:get_env(riak_core, cluster_name),
+            Cluster = application:get_env(riak_core, cluster_name, undefined),
             FN = Dir ++ "/riak_core_ring." ++ Cluster ++ TS,
             do_write_ringfile(Ring, FN)
     end.
@@ -251,7 +251,7 @@ do_write_ringfile(Ring, FN) ->
         ok = riak_core_util:replace_file(FN, term_to_binary(Ring))
     catch
         _:Err ->
-            lager:error("Unable to write ring to \"~s\" - ~p\n", [FN, Err]),
+            logger:error("Unable to write ring to \"~s\" - ~p\n", [FN, Err]),
             {error,Err}
     end.
 
@@ -261,7 +261,7 @@ find_latest_ringfile() ->
     Dir = ring_dir(),
     case file:list_dir(Dir) of
         {ok, Filenames} ->
-            Cluster = app_helper:get_env(riak_core, cluster_name),
+            Cluster = application:get_env(riak_core, cluster_name, undefined),
             Timestamps = [list_to_integer(TS) || {"riak_core_ring", C1, TS} <-
                                                      [list_to_tuple(string:tokens(FN, ".")) || FN <- Filenames],
                                                  C1 =:= Cluster],
@@ -289,7 +289,7 @@ prune_ringfiles() ->
     case ring_dir() of
         "<nostore>" -> ok;
         Dir ->
-            Cluster = app_helper:get_env(riak_core, cluster_name),
+            Cluster = application:get_env(riak_core, cluster_name, undefined),
             case file:list_dir(Dir) of
                 {error,enoent} -> ok;
                 {error, Reason} ->
@@ -353,18 +353,18 @@ reload_ring(live) ->
         {ok, RingFile} ->
             case riak_core_ring_manager:read_ringfile(RingFile) of
                 {error, Reason} ->
-                    lager:critical("Failed to read ring file: ~p",
-                                   [lager:posix_error(Reason)]),
+                    logger:critical("Failed to read ring file: ~p",
+                                   [logger:posix_error(Reason)]),
                     throw({error, Reason});
                 Ring ->
                     Ring
             end;
         {error, not_found} ->
-            lager:warning("No ring file available."),
+            logger:warning("No ring file available."),
             riak_core_ring:fresh();
         {error, Reason} ->
-            lager:critical("Failed to load ring file: ~p",
-                           [lager:posix_error(Reason)]),
+            logger:critical("Failed to load ring file: ~p",
+                           [logger:posix_error(Reason)]),
             throw({error, Reason})
     end.
 
@@ -407,7 +407,7 @@ handle_call({ring_trans, Fun, Args}, _From, State=#state{raw_ring=Ring}) ->
         {ignore, Reason} ->
             {reply, {not_changed, Reason}, State};
         Other ->
-            lager:error("ring_trans: invalid return value: ~p",
+            logger:error("ring_trans: invalid return value: ~p",
                                    [Other]),
             {reply, not_changed, State}
     end;
@@ -445,7 +445,7 @@ handle_cast(write_ringfile, State=#state{raw_ring=Ring}) ->
 handle_info(inactivity_timeout, State) ->
     case is_stable_ring(State) of
         {true,DeltaMS} ->
-            lager:debug("Promoting ring after ~p", [DeltaMS]),
+            logger:debug("Promoting ring after ~p", [DeltaMS]),
             promote_ring(),
             State2 = State#state{inactivity_timer=undefined},
             {noreply, State2};
@@ -473,9 +473,9 @@ code_change(_OldVsn, State, _Extra) ->
 %% ===================================================================
 
 ring_dir() ->
-    case app_helper:get_env(riak_core, ring_state_dir) of
+    case application:get_env(riak_core, ring_state_dir, undefined) of
         undefined ->
-            filename:join(app_helper:get_env(riak_core, platform_data_dir, "data"), "ring");
+            filename:join(application:get_env(riak_core, platform_data_dir, "data"), "ring");
         D ->
             D
     end.
@@ -498,13 +498,13 @@ run_fixups([{App, Fixup}|T], BucketName, BucketProps) ->
         {ok, NewBucketProps} ->
             NewBucketProps;
         {error, Reason} ->
-            lager:error("Error while running bucket fixup module "
+            logger:error("Error while running bucket fixup module "
                 "~p from application ~p on bucket ~p: ~p", [Fixup, App,
                     BucketName, Reason]),
             BucketProps
     catch
         What:Why ->
-            lager:error("Crash while running bucket fixup module "
+            logger:error("Crash while running bucket fixup module "
                 "~p from application ~p on bucket ~p : ~p:~p", [Fixup, App,
                     BucketName, What, Why]),
             BucketProps
@@ -694,7 +694,7 @@ refresh_my_ring_test() ->
                          {ring_state_dir, "/tmp"},
                          {cluster_name, "test"}],
         [begin
-             put({?MODULE,AppKey}, app_helper:get_env(riak_core, AppKey)),
+             put({?MODULE,AppKey}, application:get_env(riak_core, AppKey, undefined)),
              ok = application:set_env(riak_core, AppKey, Val)
          end || {AppKey, Val} <- Core_Settings],
         stop_core_processes(),

@@ -496,7 +496,7 @@ authenticate(Username, Password, ConnInfo) ->
                             %% pull the password out of the userdata
                             case lookup("password", UserData) of
                                 undefined ->
-                                    lager:warning("User ~p is configured for "
+                                    logger:warning("User ~p is configured for "
                                                   "password authentication, but has "
                                                   "no password", [Username]),
                                     {error, missing_password};
@@ -532,11 +532,11 @@ authenticate(Username, Password, ConnInfo) ->
                             end;
                         Source ->
                             %% check for a dynamically registered auth module
-                            AuthMods = app_helper:get_env(riak_core,
+                            AuthMods = application:get_env(riak_core,
                                                           auth_mods, []),
                             case proplists:get_value(Source, AuthMods) of
                                 undefined ->
-                                    lager:warning("User ~p is configured with unknown "
+                                    logger:warning("User ~p is configured with unknown "
                                                   "authentication source ~p",
                                                   [Username, Source]),
                                     {error, unknown_source};
@@ -1119,7 +1119,7 @@ validate_password_option(Pass, Options) ->
     {ok, NewOptions}.
 
 validate_permissions(Perms) ->
-    KnownPermissions = app_helper:get_env(riak_core, permissions, []),
+    KnownPermissions = application:get_env(riak_core, permissions, []),
     validate_permissions(Perms, KnownPermissions).
 
 validate_permissions([], _) ->
