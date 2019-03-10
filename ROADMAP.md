@@ -26,9 +26,9 @@ Roadmap
     * Default is false
 
 
-* [ ] Remove lager
-  * [ ] Source code
-  * [ ] Dependencies
+* [x] Remove lager
+  * [x] Source code
+  * [x] Dependencies
 
   
 * [ ] Remove `eleveldb` dependency
