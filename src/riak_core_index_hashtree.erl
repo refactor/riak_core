@@ -515,7 +515,7 @@ fold_keys(VNode, Partition, Tree, HasIndexTree) ->
     ok.
 
 get_build_throttle() ->
-    app_helper:get_env(riak_core,
+    application:get_env(riak_core,
                        anti_entropy_build_throttle,
                        ?DEFAULT_BUILD_THROTTLE).
 
@@ -853,7 +853,7 @@ do_poke(State) ->
 -spec maybe_expire(state()) -> state().
 maybe_expire(State=#state{lock=undefined, built=true, expired=false}) ->
     Diff = timer:now_diff(os:timestamp(), State#state.build_time),
-    Expire = app_helper:get_env(riak_core,
+    Expire = application:get_env(riak_core,
                                 anti_entropy_expire,
                                 ?DEFAULT_EXPIRE),
     %% Need to convert from millsec to microsec

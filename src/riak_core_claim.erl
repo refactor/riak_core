@@ -79,8 +79,8 @@
 -define(DEF_TARGET_N, 4).
 
 claim(Ring) ->
-    Want = app_helper:get_env(riak_core, wants_claim_fun),
-    Choose = app_helper:get_env(riak_core, choose_claim_fun),
+    Want = application:get_env(riak_core, wants_claim_fun, undefined),
+    Choose = application:get_env(riak_core, choose_claim_fun, undefined),
     claim(Ring, Want, Choose).
 
 claim(Ring, Want, Choose) ->
@@ -90,8 +90,8 @@ claim(Ring, Want, Choose) ->
                 end, Ring, Members).
 
 claim_until_balanced(Ring, Node) ->
-    Want = app_helper:get_env(riak_core, wants_claim_fun),
-    Choose = app_helper:get_env(riak_core, choose_claim_fun),
+    Want = application:get_env(riak_core, wants_claim_fun, undefined),
+    Choose = application:get_env(riak_core, choose_claim_fun, undefined),
     claim_until_balanced(Ring, Node, Want, Choose).
 
 claim_until_balanced(Ring, Node, {WMod, WFun}=Want, Choose) ->
@@ -197,7 +197,7 @@ wants_claim_v3(Ring, _Node) ->
         undefined ->
             %% First time through claim_until_balanced, check for override
             %% to recalculate.
-            case app_helper:get_env(riak_core, force_reclaim, false) of
+            case application:get_env(riak_core, force_reclaim, false) of
                 true ->
                     application:unset_env(riak_core, force_reclaim),
                     logger:info("Forced rerun of claim algorithm - "
@@ -233,7 +233,7 @@ default_choose_params() ->
 default_choose_params(Params) ->
     case proplists:get_value(target_n_val, Params) of
         undefined ->
-            TN = app_helper:get_env(riak_core, target_n_val, ?DEF_TARGET_N),
+            TN = application:get_env(riak_core, target_n_val, ?DEF_TARGET_N),
             [{target_n_val, TN} | Params];
         _->
             Params
@@ -468,7 +468,7 @@ choose_claim_v3(Ring) ->
     choose_claim_v3(Ring, node()).
 
 choose_claim_v3(Ring, ClaimNode) ->
-    Params = [{target_n_val, app_helper:get_env(riak_core, target_n_val, 
+    Params = [{target_n_val, application:get_env(riak_core, target_n_val,
                                                 ?DEF_TARGET_N)}],
     choose_claim_v3(Ring, ClaimNode, Params).
 

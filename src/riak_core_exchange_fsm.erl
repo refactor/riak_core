@@ -67,7 +67,7 @@ start(Service, LocalVN, RemoteVN, IndexN, Tree, Manager, VNode) ->
 %%%===================================================================
 
 init([Service, LocalVN, RemoteVN, IndexN, LocalTree, Manager, VNode]) ->
-    Timeout = app_helper:get_env(riak_core,
+    Timeout = application:get_env(riak_core,
                                  anti_entropy_timeout,
                                  ?DEFAULT_ACTION_TIMEOUT),
     monitor(process, Manager),
@@ -415,9 +415,9 @@ fold_disk_log(eof, _Fun, Acc, _DiskLog) ->
 fold_disk_log({Cont, Terms}, Fun, Acc, DiskLog) ->
     Acc2 = try
                lists:foldl(Fun, Acc, Terms)
-           catch X:Y ->
+           catch Type:Reason:Stacktrace ->
                    logger:error("~s:fold_disk_log: caught ~p ~p @ ~p\n",
-                               [?MODULE, X, Y, erlang:get_stacktrace()]),
+                     [?MODULE, Type, Reason, Stacktrace]),
                    Acc
            end,
     fold_disk_log(disk_log:chunk(DiskLog, Cont), Fun, Acc2, DiskLog).
@@ -427,16 +427,16 @@ fold_disk_log(eof, _Fun, Acc, _DiskLog) ->
 fold_disk_log({Cont, Terms}, Fun, Acc, DiskLog) ->
     Acc2 = try
                lists:foldl(Fun, Acc, Terms)
-           catch X:Y:Stack ->
+           catch Type:Reason:Stacktrace ->
                    logger:error("~s:fold_disk_log: caught ~p ~p @ ~p\n",
-                               [?MODULE, X, Y, Stack]),
+                               [?MODULE, Type, Reason, Stacktrace]),
                    Acc
            end,
     fold_disk_log(disk_log:chunk(DiskLog, Cont), Fun, Acc2, DiskLog).
 -endif.
 
 tmp_dir() ->
-    PDD = app_helper:get_env(riak_core, platform_data_dir, "/tmp"),
+    PDD = application:get_env(riak_core, platform_data_dir, "/tmp"),
     TmpDir = filename:join(PDD, ?MODULE),
     TmpCanary = filename:join(TmpDir, "canary"),
     ok = filelib:ensure_dir(TmpCanary),

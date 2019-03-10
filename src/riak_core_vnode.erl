@@ -217,7 +217,7 @@ init([Mod, Index, InitialInactivityTimeout, Forward]) ->
                    inactivity_timeout=InitialInactivityTimeout},
     %% Check if parallel disabled, if enabled (default)
     %% we don't care about the actual number, so using magic 2.
-    case app_helper:get_env(riak_core, vnode_parallel_start, 2) =< 1 of
+    case application:get_env(riak_core, vnode_parallel_start, 2) =< 1 of
         true ->
             case do_init(State) of
                 {ok, State2} ->
@@ -270,7 +270,7 @@ do_init(State = #state{index=Index, mod=Mod, forward=Forward}) ->
                     PoolPid = PoolConfig = undefined
             end,
             riak_core_handoff_manager:remove_exclusion(Mod, Index),
-            Timeout = app_helper:get_env(riak_core, vnode_inactivity_timeout, ?DEFAULT_TIMEOUT),
+            Timeout = application:get_env(riak_core, vnode_inactivity_timeout, ?DEFAULT_TIMEOUT),
             Timeout2 = Timeout + riak_core_rand:uniform(Timeout),
             State2 = State#state{modstate=ModState, inactivity_timeout=Timeout2,
                                  pool_pid=PoolPid, pool_config=PoolConfig},
@@ -925,9 +925,9 @@ terminate(Reason, _StateName, #state{mod=Mod, modstate=ModState,
             _ ->
                 ok
         end
-    catch C:T ->
+    catch Type:Reason:Stacktrace ->
         logger:error("Error while shutting down vnode worker pool ~p:~p trace : ~p",
-                    [C, T, erlang:get_stacktrace()])
+          [Type, Reason, Stacktrace])
     after
         case ModState of
             %% Handoff completed, Mod:delete has been called, now terminate.

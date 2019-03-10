@@ -243,7 +243,7 @@ set_tainted(Ring) ->
     update_meta(riak_core_ring_tainted, true, Ring).
 
 check_tainted(Ring=?CHSTATE{}, Msg) ->
-    Exit = app_helper:get_env(riak_core, exit_when_tainted, false),
+    Exit = application:get_env(riak_core, exit_when_tainted, false),
     case {get_meta(riak_core_ring_tainted, Ring), Exit} of
         {{ok, true}, true} ->
             riak_core:stop(Msg),
@@ -337,7 +337,7 @@ fresh() ->
 %%      Called by fresh/0, and otherwise only intended for testing purposes.
 -spec fresh(NodeName :: term()) -> chstate().
 fresh(NodeName) ->
-    fresh(app_helper:get_env(riak_core, ring_creation_size), NodeName).
+    fresh(application:get_env(riak_core, ring_creation_size, undefined), NodeName).
 
 %% @doc Equivalent to fresh/1 but allows specification of the ring size.
 %%      Called by fresh/1, and otherwise only intended for testing purposes.
@@ -1301,7 +1301,7 @@ pretty_print(Ring, Opts) ->
     OptLegend = lists:member(legend, Opts),
     Out = proplists:get_value(out, Opts, standard_io),
     TargetN = proplists:get_value(target_n, Opts,
-                                  app_helper:get_env(riak_core, target_n_val)),
+                                  application:get_env(riak_core, target_n_val, undefined)),
 
     Owners = riak_core_ring:all_members(Ring),
     Indices = riak_core_ring:all_owners(Ring),

@@ -3,7 +3,7 @@ Roadmap
 
 * [x] update latest rebar3
 
-* [ ] Remove app_helper, not needed anymore (A)
+* [x] Remove app_helper, not needed anymore
 
 * [ ] Investigate where number of vnodes are specified
 

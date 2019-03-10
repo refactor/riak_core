@@ -58,7 +58,7 @@ maybe_delay_start() ->
 
 validate_ring_state_directory_exists() ->
     riak_core_util:start_app_deps(riak_core),
-    RingStateDir = app_helper:get_env(riak_core, ring_state_dir),
+    RingStateDir = application:get_env(riak_core, ring_state_dir, undefined),
     case filelib:ensure_dir(filename:join(RingStateDir, "dummy")) of
         ok ->
             ok;

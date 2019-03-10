@@ -157,7 +157,7 @@ update_hashtree(Bucket, Key, RObj, Trees) ->
 
 -spec max_hashtree_tokens() -> pos_integer().
 max_hashtree_tokens() ->
-    app_helper:get_env(riak_core,
+    application:get_env(riak_core,
                        anti_entropy_max_async,
                        ?DEFAULT_HASHTREE_TOKENS).
 
