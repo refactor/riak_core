@@ -858,13 +858,11 @@ job_class_disabled_message(text, Class) ->
 %%    request was received.
 %%
 report_job_request_disposition(true, Class, Mod, Func, Line, Client) ->
-    logger:log(debug,
-        [{pid, erlang:self()}, {module, Mod}, {function, Func}, {line, Line}],
-        "Request '~p' accepted from ~p", [Class, Client]);
+    logger:debug("Request '~p' accepted from ~p", [Class, Client],
+        #{pid => erlang:self(), module => Mod, function => Func, line => Line});
 report_job_request_disposition(false, Class, Mod, Func, Line, Client) ->
-    logger:log(warning,
-        [{pid, erlang:self()}, {module, Mod}, {function, Func}, {line, Line}],
-        "Request '~p' disabled from ~p", [Class, Client]).
+    logger:warning("Request '~p' disabled from ~p", [Class, Client],
+        #{pid => erlang:self(), module => Mod, function => Func, line => Line}).
 
 %% ===================================================================
 %% Preflist utility functions
