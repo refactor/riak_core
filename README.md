@@ -1,11 +1,6 @@
-# What is riak_core_ng?
+# What is riak_core_antidote?
 
-The 'ng' version of riak core is a modernized version of riak core, it is entirely build with rebar3 using hex packages for all dependences, with more modern versions of some libraries. 99.9% of all credit goes to basho, very little extra work has happened here! The aim is to keep this up to date with all changes pushed to riak_core proper.
-
-## Improvements and Additions
-
-* R19 compatibility - This form works with R18 and R19 (lower versions should work but are not tested)
-* AAE - this version includes the Active Anti Entropy code extracted from `riak_kv` and provides a new behavior called `riak_core_aae_vnode`.
+The 'antidote' version of riak core is a minimal and up-to-date version of riak core.
 
 # Riak Core
 
