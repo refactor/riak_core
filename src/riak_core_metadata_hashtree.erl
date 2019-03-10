@@ -363,5 +363,5 @@ prepare_pkey({FullPrefix, Key}) ->
 
 %% @private
 schedule_tick() ->
-    TickMs = app_helper:get_env(riak_core, metadata_hashtree_timer, 10000),
+    TickMs = application:get_env(riak_core, metadata_hashtree_timer, 10000),
     erlang:send_after(TickMs, ?MODULE, tick).

@@ -67,7 +67,7 @@ start(Service, LocalVN, RemoteVN, IndexN, Tree, Manager, VNode) ->
 %%%===================================================================
 
 init([Service, LocalVN, RemoteVN, IndexN, LocalTree, Manager, VNode]) ->
-    Timeout = app_helper:get_env(riak_core,
+    Timeout = application:get_env(riak_core,
                                  anti_entropy_timeout,
                                  ?DEFAULT_ACTION_TIMEOUT),
     monitor(process, Manager),
@@ -436,7 +436,7 @@ fold_disk_log({Cont, Terms}, Fun, Acc, DiskLog) ->
 -endif.
 
 tmp_dir() ->
-    PDD = app_helper:get_env(riak_core, platform_data_dir, "/tmp"),
+    PDD = application:get_env(riak_core, platform_data_dir, "/tmp"),
     TmpDir = filename:join(PDD, ?MODULE),
     TmpCanary = filename:join(TmpDir, "canary"),
     ok = filelib:ensure_dir(TmpCanary),

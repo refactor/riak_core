@@ -243,7 +243,7 @@ set_tainted(Ring) ->
     update_meta(riak_core_ring_tainted, true, Ring).
 
 check_tainted(Ring=?CHSTATE{}, Msg) ->
-    Exit = app_helper:get_env(riak_core, exit_when_tainted, false),
+    Exit = application:get_env(riak_core, exit_when_tainted, false),
     case {get_meta(riak_core_ring_tainted, Ring), Exit} of
         {{ok, true}, true} ->
             riak_core:stop(Msg),

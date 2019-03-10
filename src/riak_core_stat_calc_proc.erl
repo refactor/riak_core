@@ -76,7 +76,7 @@ stop(Pid) ->
 
 init([Stat]) ->
     process_flag(trap_exit, true),
-    TTL = app_helper:get_env(riak_core, stat_cache_ttl, ?TTL),
+    TTL = application:get_env(riak_core, stat_cache_ttl, ?TTL),
     {ok, #state{stat=Stat, ttl=TTL}}.
 
 handle_call(value, From, State0=#state{active=Active0, awaiting=Awaiting0,

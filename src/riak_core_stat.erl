@@ -119,7 +119,7 @@ update(Arg) ->
     gen_server:cast(?SERVER, {update, Arg}).
 
 prefix() ->
-    app_helper:get_env(riak_core, stat_prefix, riak).
+    application:get_env(riak_core, stat_prefix, riak).
 
 %% gen_server
 
