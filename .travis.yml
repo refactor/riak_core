@@ -6,6 +6,7 @@ install:
   - ./rebar3 update
 script:
   - make test
+  - make dialyzer
 notifications:
   email: bieniusa@cs.uni-kl.de
 sudo: required
