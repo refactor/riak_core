@@ -34,7 +34,8 @@
          load_certs/1,
          parse_ciphers/1,
          print_ciphers/1,
-         new_ssl_accept/3
+         new_ssl_accept/3,
+         posix_error/1
         ]).
 
 -ifdef(TEST).
