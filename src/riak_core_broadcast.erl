@@ -114,7 +114,7 @@ start_link() ->
     {ok, Ring} = riak_core_ring_manager:get_my_ring(),
     Members = all_broadcast_members(Ring),
     {InitEagers, InitLazys} = init_peers(Members),
-    Mods = app_helper:get_env(riak_core, broadcast_mods, [riak_core_metadata_manager]),
+    Mods = application:get_env(riak_core, broadcast_mods, [riak_core_metadata_manager]),
     Res = start_link(Members, InitEagers, InitLazys, Mods),
     riak_core_ring_events:add_sup_callback(fun ?MODULE:ring_update/1),
     Res.
@@ -351,7 +351,7 @@ handle_graft({ok, Message}, MessageId, Mod, Round, Root, From, State) ->
     _ = send({broadcast, MessageId, Message, Mod, Round, Root, node()}, From),
     State1;
 handle_graft({error, Reason}, _MessageId, Mod, _Round, _Root, _From, State) ->
-    lager:error("unable to graft message from ~p. reason: ~p", [Mod, Reason]),
+    logger:error("unable to graft message from ~p. reason: ~p", [Mod, Reason]),
     State.
 
 neighbors_down(Removed, State=#state{common_eagers=CommonEagers,eager_sets=EagerSets,
@@ -410,7 +410,7 @@ maybe_exchange(undefined, State) ->
 maybe_exchange(Peer, State=#state{mods=[Mod | _],exchanges=Exchanges}) ->
     %% limit the number of exchanges this node can start concurrently.
     %% the exchange must (currently?) implement any "inbound" concurrency limits
-    ExchangeLimit = app_helper:get_env(riak_core, broadcast_start_exchange_limit, 1),
+    ExchangeLimit = application:get_env(riak_core, broadcast_start_exchange_limit, 1),
     BelowLimit = not (length(Exchanges) >= ExchangeLimit),
     FreeMod = lists:keyfind(Mod, 1, Exchanges) =:= false,
     case BelowLimit and FreeMod of
@@ -421,7 +421,7 @@ maybe_exchange(Peer, State=#state{mods=[Mod | _],exchanges=Exchanges}) ->
 exchange(Peer, State=#state{mods=[Mod | Mods],exchanges=Exchanges}) ->
     State1 = case Mod:exchange(Peer) of
                  {ok, Pid} ->
-                     lager:debug("started ~p exchange with ~p (~p)", [Mod, Peer, Pid]),
+                     logger:debug("started ~p exchange with ~p (~p)", [Mod, Peer, Pid]),
                      Ref = monitor(process, Pid),
                      State#state{exchanges=[{Mod, Peer, Ref, Pid} | Exchanges]};
                  {error, _Reason} ->
@@ -578,7 +578,7 @@ schedule_exchange_tick() ->
     schedule_tick(exchange_tick, broadcast_exchange_timer, 10000).
 
 schedule_tick(Message, Timer, Default) ->
-    TickMs = app_helper:get_env(riak_core, Timer, Default),
+    TickMs = application:get_env(riak_core, Timer, Default),
     erlang:send_after(TickMs, ?MODULE, Message).
 
 reset_peers(AllMembers, EagerPeers, LazyPeers, State) ->

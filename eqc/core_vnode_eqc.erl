@@ -56,7 +56,6 @@ simple_test_() ->
          riak_core_ring_manager:stop(),
          riak_core_test_util:stop_pid(riak_core_ring_events),
          application:stop(exometer),
-         application:stop(lager),
          application:stop(goldrush),
          [ok = application:set_env(riak_core, K, V) || {K,V} <- OldVars],
          ok
@@ -80,7 +79,7 @@ setup_simple() ->
             %% race condition with `all_nodes'.
             {vnode_rolling_start, 0}],
     OldVars = [begin
-                   Old = app_helper:get_env(riak_core, AppKey),
+                   Old = application:get_env(riak_core, AppKey, undefined),
                    ok = application:set_env(riak_core, AppKey, Val),
                    {AppKey, Old}
                end || {AppKey, Val} <- Vars],
@@ -99,7 +98,6 @@ eqc_setup() ->
     fun() ->
             riak_core_ring_manager:stop(),
             application:stop(exometer),
-            application:stop(lager),
             application:stop(goldrush),
             [ok = application:set_env(riak_core, K, V) || {K,V} <- OldVars],
             ok

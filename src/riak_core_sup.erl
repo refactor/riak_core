@@ -49,7 +49,7 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    DistMonEnabled = app_helper:get_env(riak_core, enable_dist_mon,
+    DistMonEnabled = application:get_env(riak_core, enable_dist_mon,
                                         true),
 
     Children = lists:flatten(

@@ -44,13 +44,13 @@ start(_StartType, _StartArgs) ->
     start_riak_core_sup().
 
 stop(_State) ->
-    lager:info("Stopped  application riak_core.\n", []),
+    logger:info("Stopped  application riak_core.\n", []),
     ok.
 
 maybe_delay_start() ->
     case application:get_env(riak_core, delayed_start) of
         {ok, Delay} ->
-            lager:info("Delaying riak_core startup as requested"),
+            logger:info("Delaying riak_core startup as requested"),
             timer:sleep(Delay);
         _ ->
             ok
@@ -58,14 +58,14 @@ maybe_delay_start() ->
 
 validate_ring_state_directory_exists() ->
     riak_core_util:start_app_deps(riak_core),
-    RingStateDir = app_helper:get_env(riak_core, ring_state_dir),
+    RingStateDir = application:get_env(riak_core, ring_state_dir, undefined),
     case filelib:ensure_dir(filename:join(RingStateDir, "dummy")) of
         ok ->
             ok;
         {error, RingReason} ->
-            lager:critical(
+            logger:critical(
               "Ring state directory ~p does not exist, " "and could not be created: ~p",
-              [RingStateDir, lager:posix_error(RingReason)]),
+              [RingStateDir, logger:posix_error(RingReason)]),
             throw({error, invalid_ring_state_dir})
     end.
 

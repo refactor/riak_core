@@ -104,7 +104,7 @@ maybe_create_hashtrees(Service, Index, VNode,  Last) ->
 -spec maybe_create_hashtrees(boolean(), atom(), integer(), atom(), pid()|undefined) ->
                                     pid()|undefined.
 maybe_create_hashtrees(false, _Service, _Index, _VNode, Last) ->
-    lager:debug("Hashtree not enabled."),
+    logger:debug("Hashtree not enabled."),
     Last;
 
 maybe_create_hashtrees(true, Service, Index, VNode, Last) ->
@@ -125,7 +125,7 @@ maybe_create_hashtrees(true, Service, Index, VNode, Last) ->
                     monitor(process, Trees),
                     Trees;
                 Error ->
-                    lager:info("~p/~p: unable to start index_hashtree: ~p",
+                    logger:info("~p/~p: unable to start index_hashtree: ~p",
                                [Service, Index, Error]),
                     erlang:send_after(1000, self(), retry_create_hashtree),
                     Last
@@ -157,7 +157,7 @@ update_hashtree(Bucket, Key, RObj, Trees) ->
 
 -spec max_hashtree_tokens() -> pos_integer().
 max_hashtree_tokens() ->
-    app_helper:get_env(riak_core,
+    application:get_env(riak_core,
                        anti_entropy_max_async,
                        ?DEFAULT_HASHTREE_TOKENS).
 

@@ -119,7 +119,7 @@ update(Arg) ->
     gen_server:cast(?SERVER, {update, Arg}).
 
 prefix() ->
-    app_helper:get_env(riak_core, stat_prefix, riak).
+    application:get_env(riak_core, stat_prefix, riak).
 
 %% gen_server
 
@@ -133,7 +133,7 @@ handle_call(_Req, _From, State) ->
 handle_cast({update, Arg}, State) ->
     case exometer:update([prefix(), ?APP, update_metric(Arg)], update_value(Arg)) of
         {error, not_found} ->
-            lager:debug("~p not found on update.", [Arg]);
+            logger:debug("~p not found on update.", [Arg]);
         ok ->
             ok
     end,
@@ -169,7 +169,7 @@ stats() ->
      {rings_reconciled, spiral, [], [{count, rings_reconciled_total},
                                      {one, rings_reconciled}]},
      {ring_creation_size,
-      {function, app_helper, get_env, [riak_core, ring_creation_size],
+      {function, application, get_env, [riak_core, ring_creation_size, undefined],
        match, value}, [], [{value, ring_creation_size}]},
      {gossip_received, spiral, [], [{one, gossip_received}]},
      {rejected_handoffs, counter, [], [{value, rejected_handoffs}]},

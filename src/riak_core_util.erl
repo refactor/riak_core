@@ -221,19 +221,11 @@ integer_to_list(I0, Base, R0) ->
 	    integer_to_list(I1, Base, R1)
     end.
 
--ifdef(new_hash).
 sha(Bin) ->
     crypto:hash(sha, Bin).
 
 md5(Bin) ->
     crypto:hash(md5, Bin).
--else.
-sha(Bin) ->
-    crypto:sha(Bin).
-
-md5(Bin) ->
-    crypto:md5(Bin).
--endif.
 
 %% @spec unique_id_62() -> string()
 %% @doc Create a random identifying integer, returning its string
@@ -777,7 +769,7 @@ job_class_enabled(Application, Operation) ->
 %% * Parameter types ARE NOT validated by the same rules as the public API!
 %% You are STRONGLY advised to use enable_job_class/2.
 enable_job_class(Class) ->
-    case app_helper:get_env(riak_core, job_accept_class) of
+    case application:get_env(riak_core, job_accept_class, undefined) of
         [_|_] = EnabledClasses ->
             case lists:member(Class, EnabledClasses) of
                 true ->
@@ -797,7 +789,7 @@ enable_job_class(Class) ->
 %% * Parameter types ARE NOT validated by the same rules as the public API!
 %% You are STRONGLY advised to use disable_job_class/2.
 disable_job_class(Class) ->
-    case app_helper:get_env(riak_core, job_accept_class) of
+    case application:get_env(riak_core, job_accept_class, undefined) of
         [_|_] = EnabledClasses ->
             case lists:member(Class, EnabledClasses) of
                 false ->
@@ -817,7 +809,7 @@ disable_job_class(Class) ->
 %% * Parameter types ARE NOT validated by the same rules as the public API!
 %% You are STRONGLY advised to use job_class_enabled/2.
 job_class_enabled(Class) ->
-    case app_helper:get_env(riak_core, job_accept_class) of
+    case application:get_env(riak_core, job_accept_class, undefined) of
         undefined ->
             true;
         [] ->
@@ -829,7 +821,7 @@ job_class_enabled(Class) ->
             % but since the value *can* be manipulated externally be more
             % accommodating. If someone mucks it up, nothing's going to be
             % allowed, but give them a chance to catch on instead of crashing.
-            _ = lager:error(
+            _ = logger:error(
                 "riak_core.job_accept_class is not a list: ~p", [Other]),
             false
     end.
@@ -866,11 +858,11 @@ job_class_disabled_message(text, Class) ->
 %%    request was received.
 %%
 report_job_request_disposition(true, Class, Mod, Func, Line, Client) ->
-    lager:log(debug,
+    logger:log(debug,
         [{pid, erlang:self()}, {module, Mod}, {function, Func}, {line, Line}],
         "Request '~p' accepted from ~p", [Class, Client]);
 report_job_request_disposition(false, Class, Mod, Func, Line, Client) ->
-    lager:log(warning,
+    logger:log(warning,
         [{pid, erlang:self()}, {module, Mod}, {function, Func}, {line, Line}],
         "Request '~p' disabled from ~p", [Class, Client]).
 
@@ -946,7 +938,7 @@ determine_max_n(Ring) ->
 determine_all_n(Ring) ->
     Buckets = riak_core_ring:get_buckets(Ring),
     BucketProps = [riak_core_bucket:get_bucket(Bucket, Ring) || Bucket <- Buckets],
-    Default = app_helper:get_env(riak_core, default_bucket_props),
+    Default = application:get_env(riak_core, default_bucket_props, undefined),
     DefaultN = proplists:get_value(n_val, Default),
     AllN = lists:foldl(fun(Props, AllN) ->
                                N = proplists:get_value(n_val, Props),

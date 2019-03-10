@@ -32,11 +32,11 @@
 -define(STATUS_INTERVAL, 2).
 
 -define(log_info(Str, Args),
-        lager:info("~p transfer of ~p from ~p ~p to ~p ~p failed " ++ Str,
+        logger:info("~p transfer of ~p from ~p ~p to ~p ~p failed " ++ Str,
                    [Type, Module, SrcNode, SrcPartition, TargetNode,
                     TargetPartition] ++ Args)).
 -define(log_fail(Str, Args),
-        lager:error("~p transfer of ~p from ~p ~p to ~p ~p failed " ++ Str,
+        logger:error("~p transfer of ~p from ~p ~p to ~p ~p failed " ++ Str,
                     [Type, Module, SrcNode, SrcPartition, TargetNode,
                      TargetPartition] ++ Args)).
 
@@ -132,7 +132,7 @@ start_fold_(TargetNode, Module, Type, Opts, ParentPid, SslOpts, SrcNode, SrcPart
     case TcpMod:recv(Socket, 0, RecvTimeout) of
         {ok,[?PT_MSG_VERIFY_NODE | _]} -> ok;
         {ok,[?PT_MSG_UNKNOWN | _]} ->
-            lager:warning("Could not verify identity of peer ~s.",
+            logger:warning("Could not verify identity of peer ~s.",
                           [TargetNode]),
             ok;
         {error, timeout} -> exit({shutdown, timeout});
@@ -149,7 +149,7 @@ start_fold_(TargetNode, Module, Type, Opts, ParentPid, SslOpts, SrcNode, SrcPart
     Msg = <<?PT_MSG_OLDSYNC:8,ModBin/binary>>,
     ok = TcpMod:send(Socket, Msg),
 
-    AckSyncThreshold = app_helper:get_env(riak_core, handoff_acksync_threshold, 25),
+    AckSyncThreshold = application:get_env(riak_core, handoff_acksync_threshold, 25),
 
     %% Now that handoff_concurrency applies to both outbound and
     %% inbound conns there is a chance that the receiver may
@@ -166,7 +166,7 @@ start_fold_(TargetNode, Module, Type, Opts, ParentPid, SslOpts, SrcNode, SrcPart
 
     RemoteSupportsBatching = remote_supports_batching(TargetNode),
 
-    lager:info("Starting ~p transfer of ~p from ~p ~p to ~p ~p",
+    logger:info("Starting ~p transfer of ~p from ~p ~p to ~p ~p",
                [Type, Module, SrcNode, SrcPartition,
                 TargetNode, TargetPartition]),
 
@@ -216,7 +216,7 @@ start_fold_(TargetNode, Module, Type, Opts, ParentPid, SslOpts, SrcNode, SrcPart
                      #ho_acc{} = Ret ->
                          Ret;
                      Ret ->
-                         lager:error("[handoff] Bad handoff record: ~p",
+                         logger:error("[handoff] Bad handoff record: ~p",
                                      [Ret]),
                          Ret
                  end,
@@ -248,13 +248,13 @@ start_fold_(TargetNode, Module, Type, Opts, ParentPid, SslOpts, SrcNode, SrcPart
             %% so handoff_complete can only be sent once all of the data is
             %% written.  handle_handoff_data is a sync call, so once
             %% we receive the sync the remote side will be up to date.
-            lager:debug("~p ~p Sending final sync",
+            logger:debug("~p ~p Sending final sync",
                         [SrcPartition, Module]),
             ok = TcpMod:send(Socket, <<?PT_MSG_SYNC:8>>),
 
             case TcpMod:recv(Socket, 0, RecvTimeout) of
                 {ok,[?PT_MSG_SYNC|<<"sync">>]} ->
-                    lager:debug("~p ~p Final sync received",
+                    logger:debug("~p ~p Final sync received",
                                 [SrcPartition, Module]);
                 {error, timeout} -> exit({shutdown, timeout})
             end,
@@ -262,7 +262,7 @@ start_fold_(TargetNode, Module, Type, Opts, ParentPid, SslOpts, SrcNode, SrcPart
             FoldTimeDiff = end_fold_time(StartFoldTime),
             ThroughputBytes = TotalBytes/FoldTimeDiff,
 
-            ok = lager:info("~p transfer of ~p from ~p ~p to ~p ~p"
+            ok = logger:info("~p transfer of ~p from ~p ~p to ~p ~p"
                             " completed: sent ~s bytes in ~p of ~p objects"
                             " in ~.2f seconds (~s/second)",
                             [Type, Module, SrcNode, SrcPartition, TargetNode, TargetPartition,
@@ -305,9 +305,9 @@ start_fold(TargetNode, Module, {Type, Opts}, ParentPid, SslOpts) ->
              exit({shutdown, {error, Reason}});
          throw:{be_quiet, Err, Reason} ->
              gen_fsm_compat:send_event(ParentPid, {handoff_error, Err, Reason});
-         Err:Reason ->
+         Err:Reason:Stacktrace ->
              ?log_fail("because of ~p:~p ~p",
-                       [Err, Reason, erlang:get_stacktrace()]),
+                       [Err, Reason, Stacktrace]),
              gen_fsm_compat:send_event(ParentPid, {handoff_error, Err, Reason})
      end.
 -else.
@@ -340,7 +340,7 @@ start_fold(TargetNode, Module, {Type, Opts}, ParentPid, SslOpts) ->
      end.
 -endif.
 start_visit_item_timer() ->
-    Ival = case app_helper:get_env(riak_core, handoff_receive_timeout) of
+    Ival = case application:get_env(riak_core, handoff_receive_timeout, undefined) of
                TO when is_integer(TO) ->
                    erlang:max(1000, TO div 3);
                _ ->
@@ -415,7 +415,7 @@ visit_item2(K, V, Acc) ->
             case Module:encode_handoff_item(K, V) of
                 corrupted ->
                     {Bucket, Key} = K,
-                    lager:warning("Unreadable object ~p/~p discarded",
+                    logger:warning("Unreadable object ~p/~p discarded",
                                   [Bucket, Key]),
                     Acc;
                 BinObj ->
@@ -430,7 +430,7 @@ visit_item2(K, V, Acc) ->
                                               item_queue_byte_size=ItemQueueByteSize2},
 
                             %% Unit size is bytes:
-                            HandoffBatchThreshold = app_helper:get_env(riak_core,
+                            HandoffBatchThreshold = application:get_env(riak_core,
                                                                        handoff_batch_threshold,
                                                                        1024*1024),
 
@@ -534,7 +534,7 @@ get_handoff_port(Node) when is_atom(Node) ->
     end.
 
 get_handoff_ssl_options() ->
-    case app_helper:get_env(riak_core, handoff_ssl_options, []) of
+    case application:get_env(riak_core, handoff_ssl_options, []) of
         [] ->
             [];
         Props ->
@@ -550,11 +550,11 @@ get_handoff_ssl_options() ->
                 Props
             catch
                 error:{badmatch, {FailProp, BadMat}} ->
-                    lager:error("SSL handoff config error: property ~p: ~p.",
+                    logger:error("SSL handoff config error: property ~p: ~p.",
                                 [FailProp, BadMat]),
                     [];
                 X:Y ->
-                    lager:error("Failure processing SSL handoff config "
+                    logger:error("Failure processing SSL handoff config "
                                 "~p: ~p:~p",
                                 [Props, X, Y]),
                     []
@@ -562,7 +562,7 @@ get_handoff_ssl_options() ->
     end.
 
 get_handoff_receive_timeout() ->
-    app_helper:get_env(riak_core, handoff_timeout, ?TCP_TIMEOUT).
+    application:get_env(riak_core, handoff_timeout, ?TCP_TIMEOUT).
 
 end_fold_time(StartFoldTime) ->
     EndFoldTime = os:timestamp(),
@@ -620,7 +620,7 @@ maybe_send_status(ModSrcTgt, Stats=#ho_stats{interval_end=IntervalEnd}) ->
     end.
 
 get_status_interval() ->
-    app_helper:get_env(riak_core, handoff_status_interval, ?STATUS_INTERVAL).
+    application:get_env(riak_core, handoff_status_interval, ?STATUS_INTERVAL).
 
 get_src_partition(Opts) ->
     proplists:get_value(src_partition, Opts).
@@ -654,12 +654,12 @@ remote_supports_batching(Node) ->
     case catch rpc:call(Node, riak_core_handoff_receiver,
                   supports_batching, []) of
         true ->
-            lager:debug("remote node supports batching, enabling"),
+            logger:debug("remote node supports batching, enabling"),
             true;
         _ ->
             %% whatever the problem here, just revert to the old behavior
             %% which shouldn't matter too much for any single handoff
-            lager:debug("remote node doesn't support batching"),
+            logger:debug("remote node doesn't support batching"),
             false
     end.
 
