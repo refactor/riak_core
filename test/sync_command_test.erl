@@ -64,7 +64,7 @@ setup_simple() ->
             {vnode_rolling_start, 0}],
     error_logger:tty(false),
     _ = [begin
-        Old = app_helper:get_env(riak_core, AppKey),
+        Old = application:get_env(riak_core, AppKey, undefined),
         ok = application:set_env(riak_core, AppKey, Val),
         {AppKey, Old}
      end || {AppKey, Val} <- Vars],
