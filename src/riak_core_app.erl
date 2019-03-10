@@ -89,7 +89,6 @@ start_riak_core_sup() ->
             ok = add_ring_event_handler(),
 
             ok = register_capabilities(),
-            ok = init_cli_registry(),
             ok = riak_core_throttle:init(),
 
             riak_core_throttle:init(),
@@ -109,12 +108,6 @@ register_applications() ->
 
 add_ring_event_handler() ->
     ok = riak_core_ring_events:add_guarded_handler(riak_core_ring_handler, []).
-
-init_cli_registry() ->
-    riak_core_cli_registry:load_schema(),
-    riak_core_cli_registry:register_node_finder(),
-    riak_core_cli_registry:register_cli(),
-    ok.
 
 register_capabilities() ->
     Capabilities = [[{riak_core, vnode_routing},

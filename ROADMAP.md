@@ -41,8 +41,8 @@ Roadmap
 
 * [ ] Remove node ring versioning (A)
   
-* [ ] Remove riak CLI (A)
-  * [ ] Removing CLI removes dependency `clique`
+* [x] Remove riak CLI (A)
+  * [x] Removing CLI removes dependency `clique`
 
 * [ ] Investigate if `cuttlefish` is needed
   
