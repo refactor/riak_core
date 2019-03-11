@@ -797,16 +797,18 @@ set_aae_throttle_kill(Bool) when Bool == true; Bool == false ->
     application:set_env(riak_core, ?AAE_THROTTLE_KILL_ENV_KEY, Bool).
 
 get_max_local_vnodeq() ->
-    try
-	{ok, [{max,M}]} =
-	    exometer:get_value(
-	      [riak_core:stat_prefix(),riak_core,vnodeq,riak_core_vnode],
-	      [max]),
-	{M, node()}
-    catch _X:_Y ->
+  %% STATS
+  %% likely to become obsolete (AAE)
+%%    try
+%%	{ok, [{max,M}]} =
+%%	    exometer:get_value(
+%%	      [riak_core:stat_prefix(),riak_core,vnodeq,riak_core_vnode],
+%%	      [max]),
+%%	{M, node()}
+%%    catch _X:_Y ->
             %% This can fail locally if riak_core & riak_core haven't finished their setup.
-            {0, node()}
-    end.
+            {0, node()}.
+%%    end.
 
 get_aae_throttle_limits() ->
     %% init() should have already set a sane default, so the default below should never be used.
