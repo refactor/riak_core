@@ -5,6 +5,8 @@ Roadmap
 
 * [x] Remove app_helper, not needed anymore
 
+* [ ] Try the free version of quickcheck
+
 * [ ] Investigate where number of vnodes are specified
 
 * [ ] Where is the `riak_object` module and why is it used in other modules?
