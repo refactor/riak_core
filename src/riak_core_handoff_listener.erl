@@ -80,7 +80,8 @@ new_connection(Socket, State = #state{ssl_opts = SslOpts}) ->
             ok = riak_core_handoff_receiver:set_socket(Pid, Socket),
             {ok, State};
         {error, _Reason} ->
-            riak_core_stat:update(rejected_handoffs),
+          %% STATS
+%%            riak_core_stat:update(rejected_handoffs),
             gen_tcp:close(Socket),
             {ok, State}
     end.
