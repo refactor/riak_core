@@ -962,19 +962,28 @@ internal_ring_changed(Node, CState) ->
     %% Outer case statement already checks for ring_ready
     case {IsClaimant, Changed} of
         {true, true} ->
-            riak_core_stat:update(converge_timer_end),
-            riak_core_stat:update(converge_timer_begin);
+            %% STATS
+%%            riak_core_stat:update(converge_timer_end),
+            %% STATS
+%%            riak_core_stat:update(converge_timer_begin);
+            ok;
         {true, false} ->
-            riak_core_stat:update(converge_timer_end);
+            %% STATS
+%%            riak_core_stat:update(converge_timer_end);
+            ok;
         _ ->
             ok
     end,
 
     case {IsClaimant, WasPending, IsPending} of
         {true, false, true} ->
-            riak_core_stat:update(rebalance_timer_begin);
+            %% STATS
+%%            riak_core_stat:update(rebalance_timer_begin);
+            ok;
         {true, true, false} ->
-            riak_core_stat:update(rebalance_timer_end);
+            %% STATS
+%%            riak_core_stat:update(rebalance_timer_end);
+            ok;
         _ ->
             ok
     end,

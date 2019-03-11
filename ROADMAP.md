@@ -7,6 +7,10 @@ Roadmap
 
 * [ ] Investigate where number of vnodes are specified
 
+* [ ] Where is the `riak_object` module and why is it used in other modules?
+
+* [ ] Is `riak_core_stat_xform` `parse_transform` actually applied, and if so, what does it do?
+
 * [ ] Extract reusable data structures into own repo Affected modules: 
   * [ ] `riak_core_priority_queue` 
   * [ ] `vectorclock` 
@@ -37,17 +41,19 @@ Roadmap
     * `eleveldb` is *not* used to [persist the hashtree](https://github.com/basho/riak_core/wiki/Cluster-Metadata-Internals)
     * `riak_core` abuses eleveldb iterator call as a snapshot capture
   
-* [x] Update poolboy dependency
+* [ ] Update poolboy dependency
 
-* [ ] Remove node ring versioning (A)
+* [ ] Remove node ring versioning 
   
-* [x] Remove riak CLI (A)
+* [x] Remove riak CLI
   * [x] Removing CLI removes dependency `clique`
 
 * [ ] Investigate if `cuttlefish` is needed
   
 * [ ] Use own metric system
-  * [ ] Remove old metrics `folsom`, `basho_stats`, `riak_sysmon`, `exometer_core` and calls in code
+  * [x] Remove `exometer_core` and calls in code
+  * [x] Remove stats modules
+  * [ ] Remove `folsom`, `riak_sysmon`
   * [ ] Replace with own metrics, marked in code as `%% STATS`
 
 * [ ] Remove `riak_core_aae_vnode` and corresponding code additions (look up previous commits)

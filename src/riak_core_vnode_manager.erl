@@ -1040,8 +1040,12 @@ kill_repair(Repair, Reason) ->
                                         {Mod, undefined, Partition},
                                         Reason).
 
-register_vnode_stats(Mod, Index, Pid) ->
-    riak_core_stat:register_vnode_stats(Mod, Index, Pid).
+register_vnode_stats(_Mod, _Index, _Pid) ->
+  %% STATS
+    %riak_core_stat:register_vnode_stats(Mod, Index, Pid).
+  ok.
 
-unregister_vnode_stats(Mod, Index) ->
-    riak_core_stat:unregister_vnode_stats(Mod, Index).
+unregister_vnode_stats(_Mod, _Index) ->
+  %% STATS
+    %riak_core_stat:unregister_vnode_stats(Mod, Index).
+  ok.

@@ -99,11 +99,12 @@ start_riak_core_sup() ->
     end.
 
 register_applications() ->
-    riak_core:register(riak_core, [{stat_mod, riak_core_stat},
-                                   {permissions, [get_bucket,
-                                                  set_bucket,
-                                                  get_bucket_type,
-                                                  set_bucket_type]}]),
+  %% STATS
+%%    riak_core:register(riak_core, [{stat_mod, riak_core_stat},
+%%                                   {permissions, [get_bucket,
+%%                                                  set_bucket,
+%%                                                  get_bucket_type,
+%%                                                  set_bucket_type]}]),
     ok.
 
 add_ring_event_handler() ->
