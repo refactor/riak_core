@@ -6,7 +6,7 @@
      {included_applications,[chash]},
      {applications,
          [kernel,stdlib,gen_fsm_compat,sasl,crypto,riak_sysmon,os_mon,
-          basho_stats,eleveldb,pbkdf2,poolboy,exometer_core,folsom]},
+          basho_stats,eleveldb,pbkdf2,poolboy,folsom]},
      {mod,{riak_core_app,[]}},
      {env,
          [{cluster_name,"default"},
