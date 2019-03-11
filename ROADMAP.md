@@ -43,15 +43,17 @@ Roadmap
   
 * [ ] Update poolboy dependency
 
-* [ ] Remove node ring versioning (A)
+* [ ] Remove node ring versioning 
   
-* [x] Remove riak CLI (A)
+* [x] Remove riak CLI
   * [x] Removing CLI removes dependency `clique`
 
 * [ ] Investigate if `cuttlefish` is needed
   
 * [ ] Use own metric system
-  * [ ] Remove old metrics `folsom`, `basho_stats`, `riak_sysmon`, `exometer_core` and calls in code
+  * [x] Remove `exometer_core` and calls in code
+  * [x] Remove stats modules
+  * [ ] Remove `folsom`, `riak_sysmon`
   * [ ] Replace with own metrics, marked in code as `%% STATS`
 
 * [ ] Remove `riak_core_aae_vnode` and corresponding code additions (look up previous commits)
