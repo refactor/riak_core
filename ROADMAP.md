@@ -7,6 +7,10 @@ Roadmap
 
 * [ ] Investigate where number of vnodes are specified
 
+* [ ] Where is the `riak_object` module and why is it used in other modules?
+
+* [ ] Is `riak_core_stat_xform` `parse_transform` actually applied, and if so, what does it do?
+
 * [ ] Extract reusable data structures into own repo Affected modules: 
   * [ ] `riak_core_priority_queue` 
   * [ ] `vectorclock` 
