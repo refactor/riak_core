@@ -41,7 +41,7 @@ Roadmap
     * `eleveldb` is *not* used to [persist the hashtree](https://github.com/basho/riak_core/wiki/Cluster-Metadata-Internals)
     * `riak_core` abuses eleveldb iterator call as a snapshot capture
   
-* [x] Update poolboy dependency
+* [ ] Update poolboy dependency
 
 * [ ] Remove node ring versioning (A)
   
