@@ -232,7 +232,7 @@ handle_info(_Info, StateName, State) ->
 
 terminate(_Reason, _StateName, #state{pool=Pool}) ->
     %% stop poolboy
-    gen_fsm_compat:sync_send_all_state_event(Pool, stop),
+    poolboy:stop(Pool),
     ok.
 
 code_change(_OldVsn, StateName, State, _Extra) ->
