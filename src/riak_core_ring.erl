@@ -1464,9 +1464,7 @@ log_meta_merge(M1, M2, Meta) ->
 %% Handle legacy rings as well.
 log_ring_result(#chstate_v2{vclock=V,members=Members,next=Next}) ->
     logger:debug("Updated ring vclock: ~p, Members: ~p, Next: ~p", 
-        [V, Members, Next]);
-log_ring_result(Ring) ->
-    logger:debug("Ring: ~p", [Ring]).
+        [V, Members, Next]).
 
 %% @private
 internal_reconcile(State, OtherState) ->
