@@ -373,8 +373,7 @@ handle_call(get_raw_ring, _From, #state{raw_ring=Ring} = State) ->
 handle_call(get_raw_ring_chashbin, _From, #state{raw_ring=Ring} = State) ->
     {ok, CHBin} = get_chash_bin(),
     {reply, {ok, Ring, CHBin}, State};
-handle_call({set_my_ring, RingIn}, _From, State) ->
-    Ring = riak_core_ring:upgrade(RingIn),
+handle_call({set_my_ring, Ring}, _From, State) ->
     State2 = prune_write_notify_ring(Ring, State),
     {reply,ok,State2};
 handle_call(refresh_my_ring, _From, State) ->

@@ -136,6 +136,7 @@ append_defaults(Items) when is_list(Items) ->
     ok.
 
 -spec resolve([{atom(), any()}], [{atom(), any()}]) -> [{atom(), any()}].
+%%noinspection ErlangUnusedVariable
 resolve(PropsA, PropsB) when is_list(PropsA) andalso
                              is_list(PropsB) ->
     PropsASorted = lists:ukeysort(1, PropsA),

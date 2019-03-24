@@ -137,8 +137,7 @@ wants_claim_v1(Ring) ->
     wants_claim_v1(Ring, node()).
 
 %% @deprecated
-wants_claim_v1(Ring0, Node) ->
-    Ring = riak_core_ring:upgrade(Ring0),
+wants_claim_v1(Ring, Node) ->
     %% Calculate the expected # of partitions for a perfectly balanced ring. Use
     %% this expectation to determine the relative balance of the ring. If the
     %% ring isn't within +-2 partitions on all nodes, we need to rebalance.
@@ -247,9 +246,8 @@ choose_claim_v1(Ring) ->
 choose_claim_v1(Ring0, Node) ->
     choose_claim_v1(Ring0, Node, []).
 
-choose_claim_v1(Ring0, Node, Params0) ->
+choose_claim_v1(Ring, Node, Params0) ->
     Params = default_choose_params(Params0),
-    Ring = riak_core_ring:upgrade(Ring0),
     TargetN = proplists:get_value(target_n_val, Params),
     case meets_target_n(Ring, TargetN) of
         {true, TailViolations} ->
@@ -600,8 +598,7 @@ claim_diagonal(Wants, Owners, Params) ->
                        node(),
                        integer()) ->
                               riak_core_ring:riak_core_ring().
-sequential_claim(Ring0, Node, TargetN) ->
-    Ring = riak_core_ring:upgrade(Ring0),
+sequential_claim(Ring, Node, TargetN) ->
     Nodes = lists:usort([Node|riak_core_ring:claiming_members(Ring)]),
     NodeCount = length(Nodes),
     RingSize = riak_core_ring:num_partitions(Ring),
@@ -683,8 +680,7 @@ backfill_ring(RingSize, Nodes, Remaining, Acc) ->
     backfill_ring(RingSize, Nodes, Remaining - 1, [Nodes | Acc]).
 
 
-claim_rebalance_n(Ring0, Node) ->
-    Ring = riak_core_ring:upgrade(Ring0),
+claim_rebalance_n(Ring, Node) ->
     Nodes = lists:usort([Node|riak_core_ring:claiming_members(Ring)]),
     Zipped = diagonal_stripe(Ring, Nodes),
 
@@ -712,8 +708,7 @@ random_choose_claim(Ring) ->
 random_choose_claim(Ring, Node) ->
     random_choose_claim(Ring, Node, []).
 
-random_choose_claim(Ring0, Node, _Params) ->
-    Ring = riak_core_ring:upgrade(Ring0),
+random_choose_claim(Ring, Node, _Params) ->
     riak_core_ring:transfer_node(riak_core_ring:random_other_index(Ring),
                                  Node, Ring).
 
