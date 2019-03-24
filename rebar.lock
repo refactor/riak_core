@@ -8,7 +8,7 @@
  {<<"folsom">>,{pkg,<<"folsom">>,<<"0.8.7">>},0},
  {<<"gen_fsm_compat">>,{pkg,<<"gen_fsm_compat">>,<<"0.3.0">>},0},
  {<<"getopt">>,{pkg,<<"getopt">>,<<"1.0.1">>},1},
- {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},0},
+ {<<"goldrush">>,{pkg,<<"goldrush">>,<<"0.1.9">>},2},
  {<<"lager">>,{pkg,<<"lager">>,<<"3.6.8">>},1},
  {<<"pbkdf2">>,{pkg,<<"pbkdf2">>,<<"2.0.0">>},0},
  {<<"poolboy">>,{pkg,<<"poolboy">>,<<"1.5.2">>},0},
