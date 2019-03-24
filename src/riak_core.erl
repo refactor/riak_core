@@ -124,7 +124,6 @@ standard_join(Node, Ring, Rejoin, Auto) ->
         {_, _, false} ->
             {error, different_ring_sizes};
         _ ->
-            GossipVsn = riak_core_gossip:gossip_version(),
             Ring2 = riak_core_ring:add_member(node(), Ring,
                                               node()),
             Ring3 = riak_core_ring:set_owner(Ring2, node()),
@@ -133,7 +132,7 @@ standard_join(Node, Ring, Rejoin, Auto) ->
                                                   Ring3,
                                                   node(),
                                                   gossip_vsn,
-                                                  GossipVsn),
+                                                  2),
             {_, Ring5} = riak_core_capability:update_ring(Ring4),
             Ring6 = maybe_auto_join(Auto, node(), Ring5),
             riak_core_ring_manager:set_my_ring(Ring6),
