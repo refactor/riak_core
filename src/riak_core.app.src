@@ -9,7 +9,7 @@
           kernel,stdlib,sasl,crypto,os_mon,
           gen_fsm_compat,
           riak_sysmon,
-          basho_stats,eleveldb,pbkdf2,poolboy,folsom
+          basho_stats,eleveldb,pbkdf2,poolboy
          ]},
      {mod,{riak_core_app,[]}},
      {env,
