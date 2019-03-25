@@ -32,10 +32,6 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    %% Don't add our system_monitor event handler here.  Instead, let
-    %% riak_core_sysmon_minder start it, because that process can act
-    %% on any handler crash notification, whereas we cannot.
-
     maybe_delay_start(),
     ok = validate_ring_state_directory_exists(),
     ok = safe_register_cluster_info(),
