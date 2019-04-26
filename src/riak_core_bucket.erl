@@ -31,7 +31,6 @@
     get_buckets/1,
     bucket_nval_map/1,
     default_object_nval/0,
-    all_n/1,
     merge_props/2,
     name/1,
     n_val/1, get_value/2]).
@@ -200,23 +199,23 @@ bucket_nval_map(Ring) ->
 default_object_nval() ->
     riak_core_bucket:n_val(riak_core_bucket_props:defaults()).
 
--spec all_n(riak_core_ring()) -> [pos_integer(),...].
-all_n(Ring) ->
-    BucketNVals = bucket_nvals(Ring),
-    BucketTypeNVals = riak_core_bucket_type:all_n(),
-    ordsets:to_list(
-        ordsets:union(BucketNVals, BucketTypeNVals)
-    ).
-
-%% @private
--spec bucket_nvals(riak_core_ring()) -> nval_set().
-bucket_nvals(Ring) ->
-    BucketNs = bucket_nval_map(Ring),
-    DefaultN = default_object_nval(),
-    AllN = lists:foldl(fun({_, N}, Acc) ->
-                               ordsets:add_element(N, Acc)
-                       end, [DefaultN], BucketNs),
-    AllN.
+%%-spec all_n(riak_core_ring()) -> [pos_integer(),...].
+%%all_n(Ring) ->
+%%    BucketNVals = bucket_nvals(Ring),
+%%    BucketTypeNVals = riak_core_bucket_type:all_n(),
+%%    ordsets:to_list(
+%%        ordsets:union(BucketNVals, BucketTypeNVals)
+%%    ).
+%%
+%%%% @private
+%%-spec bucket_nvals(riak_core_ring()) -> nval_set().
+%%bucket_nvals(Ring) ->
+%%    BucketNs = bucket_nval_map(Ring),
+%%    DefaultN = default_object_nval(),
+%%    AllN = lists:foldl(fun({_, N}, Acc) ->
+%%                               ordsets:add_element(N, Acc)
+%%                       end, [DefaultN], BucketNs),
+%%    AllN.
 
 
 name(BProps) ->
