@@ -31,7 +31,6 @@
     get_buckets/1,
     bucket_nval_map/1,
     default_object_nval/0,
-    all_n/1,
     merge_props/2,
     name/1,
     n_val/1, get_value/2]).
@@ -44,7 +43,7 @@
 -type properties() :: [property()].
 
 -type riak_core_ring() :: riak_core_ring:riak_core_ring().
--type bucket_type()  :: riak_core_bucket_type:bucket_type().
+-type bucket_type()  :: binary().
 -type nval_set() :: ordsets:ordset(pos_integer()).
 -type bucket() :: binary() | {bucket_type(), binary()}.
 
@@ -67,13 +66,6 @@ append_bucket_defaults(Items) when is_list(Items) ->
                         ok | {error, no_type | [{atom(), atom()}]}.
 set_bucket({<<"default">>, Name}, BucketProps) ->
     set_bucket(Name, BucketProps);
-set_bucket({Type, _Name}=Bucket, BucketProps0) ->
-    case riak_core_bucket_type:get(Type) of
-        undefined -> 
-            logger:error("Attempt to set properties of non-existent bucket type ~p", [Bucket]),
-            {error, no_type};
-        _ -> set_bucket(fun set_bucket_in_metadata/2, Bucket, BucketProps0)
-    end;
 set_bucket(Name, BucketProps0) ->
     set_bucket(fun set_bucket_in_ring/2, Name, BucketProps0).
 
@@ -87,9 +79,6 @@ set_bucket(StoreFun, Bucket, BucketProps0) ->
             logger:error("Bucket properties validation failed ~p~n", [Details]),
             {error, Details}
     end.
-
-set_bucket_in_metadata(Bucket, BucketMeta) ->
-    riak_core_metadata:put(?METADATA_PREFIX, bucket_key(Bucket), BucketMeta).
 
 set_bucket_in_ring(Bucket, BucketMeta) ->
     F = fun(Ring, _Args) ->
@@ -119,16 +108,6 @@ merge_props(Overriding, Other) ->
 %%
 get_bucket({<<"default">>, Name}) ->
     get_bucket(Name);
-get_bucket({Type, _Name}=Bucket) ->
-    TypeMeta = riak_core_bucket_type:get(Type),
-    BucketMeta = riak_core_metadata:get(?METADATA_PREFIX, bucket_key(Bucket),
-                                        [{resolver, fun riak_core_bucket_props:resolve/2}]),
-    case merge_type_props(TypeMeta, BucketMeta) of
-        {error, _}=Error -> 
-            logger:error("~p getting properties of bucket ~p",[Error,Bucket]),
-            Error;
-        Props -> [{name, Bucket} | Props]
-    end;
 get_bucket(Name) ->
     Meta = riak_core_ring_manager:get_bucket_meta(Name),
     get_bucket_props(Name, Meta).
@@ -138,9 +117,6 @@ get_bucket(Name) ->
 %% @private
 get_bucket({<<"default">>, Name}, Ring) ->
     get_bucket(Name, Ring);
-get_bucket({_Type, _Name}=Bucket, _Ring) ->
-    %% non-default type buckets are not stored in the ring, so just ignore it
-    get_bucket(Bucket);
 get_bucket(Bucket, Ring) ->
     Meta = riak_core_ring:get_meta(bucket_key(Bucket), Ring),
     get_bucket_props(Bucket, Meta).
@@ -150,13 +126,6 @@ get_bucket_props(Name, undefined) ->
 get_bucket_props(_Name, {ok, Bucket}) ->
     Bucket.
 
-merge_type_props(undefined, _) ->
-    {error, no_type};
-merge_type_props(TypeMeta, undefined) when is_list(TypeMeta) ->
-    TypeMeta;
-merge_type_props(TypeMeta, BucketMeta) when is_list(TypeMeta) andalso
-                                            is_list(BucketMeta) ->
-    merge_props(BucketMeta, TypeMeta).
 
 %% @spec reset_bucket(binary()) -> ok
 %% @doc Reset the bucket properties for Bucket to the settings
@@ -199,25 +168,6 @@ bucket_nval_map(Ring) ->
 -spec default_object_nval() -> integer().
 default_object_nval() ->
     riak_core_bucket:n_val(riak_core_bucket_props:defaults()).
-
--spec all_n(riak_core_ring()) -> [pos_integer(),...].
-all_n(Ring) ->
-    BucketNVals = bucket_nvals(Ring),
-    BucketTypeNVals = riak_core_bucket_type:all_n(),
-    ordsets:to_list(
-        ordsets:union(BucketNVals, BucketTypeNVals)
-    ).
-
-%% @private
--spec bucket_nvals(riak_core_ring()) -> nval_set().
-bucket_nvals(Ring) ->
-    BucketNs = bucket_nval_map(Ring),
-    DefaultN = default_object_nval(),
-    AllN = lists:foldl(fun({_, N}, Acc) ->
-                               ordsets:add_element(N, Acc)
-                       end, [DefaultN], BucketNs),
-    AllN.
-
 
 name(BProps) ->
     get_value(name, BProps).
